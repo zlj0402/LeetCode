@@ -2,19 +2,69 @@
 //
 
 #include <iostream>
+using namespace std;
 
-int main()
-{
-    std::cout << "Hello World!\n";
-}
+ // Definition for singly-linked list.
+  struct ListNode {
+      int val;
+      ListNode *next;
+      ListNode() : val(0), next(nullptr) {}
+      ListNode(int x) : val(x), next(nullptr) {}
+      ListNode(int x, ListNode *next) : val(x), next(next) {}
 
-// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
-// 调试程序: F5 或调试 >“开始调试”菜单
+      static void print_list(ListNode* head) {
+          ListNode* cur = head;
+          while (cur != nullptr) {
+              cout << cur->val << "->";
+              cur = cur->next;
+          }
+          cout << "null" << endl;
+      }
+  };
+ 
+  class Solution {
+  private:
+      void insert_node(ListNode* prev, ListNode* node) {
+          // insert node after prev
+          // prev is not nullptr
+          node->next = prev->next;
+          prev->next = node;
+      }
 
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
+  public:
+      ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+          if (list1 == nullptr)
+              return list2;
+          if (list2 == nullptr)
+              return list1;
+          ListNode* dummy_head = new ListNode(-1, list1);
+          //ListNode::print_list(dummy_head);
+          //ListNode::print_list(list2);
+          for (ListNode* p = list2; p != nullptr;) {
+              ListNode* cur = dummy_head;
+              ListNode* pp = p;
+              p = p->next;
+              while (cur->next != nullptr && cur->next->val < pp->val)
+                  cur = cur->next;
+              insert_node(cur, pp);
+          }
+
+          return dummy_head->next;
+      }
+  };
+
+  int main() {
+      // 创建链表: 1 -> 2 -> 3
+      ListNode* head = new ListNode(1);
+      head->next = new ListNode(3);
+      head->next->next = new ListNode(5);
+
+      // 创建链表: 2 -> 4 -> 6
+      ListNode* head2 = new ListNode(2);
+      head2->next = new ListNode(4);
+      head2->next->next = new ListNode(6);
+      // 打印链表
+      ListNode::print_list((new Solution())->mergeTwoLists(head, head2));  // 输出: 1 -> 2 -> 3
+
+      return 0;
+  }
