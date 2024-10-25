@@ -31,14 +31,9 @@ private:
 public:
 
     ListNode* deleteDuplicates(ListNode* head) {
-        //memset(map, 1, sizeof(map));
-       /* for (size_t i = 0; i < 201; i++) {
-            cout << map[i];
-        }
-        cout << endl;
-        return nullptr;*/
+        memset(map, 0, sizeof(map));
         ListNode* dummy_head = new ListNode(-1, head);
-        ListNode::print_list(head);
+        //ListNode::print_list(head);
 
         ListNode* cur = dummy_head;
         while (cur->next != nullptr) {
