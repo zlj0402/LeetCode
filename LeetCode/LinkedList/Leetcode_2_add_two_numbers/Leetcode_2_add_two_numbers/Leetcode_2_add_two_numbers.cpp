@@ -11,6 +11,10 @@
 // 从相同长度的地方，开始同时遍历
 // 大于10进位，最后一位的话要增加一个节点；
 
+// rank - great:
+// 时间效率战胜100%
+// 空间复杂度战胜97.3%
+
 #include "RandomNumbers.h"
 #include "Leetcode/LinkedList.h"
 using namespace Leetcode::LinkedList;
@@ -43,7 +47,7 @@ public:
 
         bool carry_bit = false;
         while (ll) {
-            int sl_val = sl ? sl->val : 0;
+            int sl_val = sl ? sl->val : 0; // sl短一点，注意判空取值!!!
             int val = ll->val + sl_val + (carry_bit ? 1 : 0);
             carry_bit = false;  // 注意carry_bit重置的额位置，应该是上一次carry_bit进位使用完之后，这次判断赋值之前!!!
             ll->val = val % 10;
@@ -55,7 +59,7 @@ public:
                 }
             }
             ll = ll->next;
-            if (sl) sl = sl->next;
+            if (sl) sl = sl->next;  // sl短一点，注意判空再后移!!!
         }
         return l1_long ? l1 : l2;
     }
