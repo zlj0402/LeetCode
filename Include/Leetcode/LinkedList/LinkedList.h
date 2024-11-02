@@ -1,6 +1,9 @@
 #ifndef LEETCODE_LINKEDLIST_H
 #define LEETCODE_LINKEDLIST_H
 
+#include <iostream>
+#include <ostream>
+
 namespace Leetcode {
     namespace LinkedList {
         // Definition for singly-linked list.
