@@ -2,7 +2,6 @@
 #define LEETCODE_LINKEDLIST_H
 
 #include <iostream>
-#include <ostream>
 
 namespace Leetcode {
     namespace LinkedList {
@@ -28,14 +27,14 @@ namespace Leetcode {
             static void print_list(ListNode* head) {
                 ListNode* cur = head;
                 while (cur != nullptr) {
-                    cout << cur->val << "->";
+                    std::cout << cur->val << "->";
                     cur = cur->next;
                 }
-                cout << "null" << endl;
+                std::cout << "null" << std::endl;
             }
 
-            // 重载输出流操作符
-            friend ostream& operator<<(ostream& os, const ListNode* head) {
+            // Overloading output stream operators
+            friend std::ostream& operator<<(std::ostream& os, const ListNode* head) {
                 const ListNode* cur = head;
                 while (cur != nullptr) {
                     os << cur->val;
