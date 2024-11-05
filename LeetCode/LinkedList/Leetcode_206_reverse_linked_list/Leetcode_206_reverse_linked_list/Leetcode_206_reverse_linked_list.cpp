@@ -13,6 +13,10 @@
 //                               3  ->  4
 // dummy_head  ->  2  ->  1  ↗
 
+// rank: good
+// 时间0ms,击败100%
+// 存储12.7MB，击败69.25%
+
 
 /**
  * Definition for singly-linked list.
