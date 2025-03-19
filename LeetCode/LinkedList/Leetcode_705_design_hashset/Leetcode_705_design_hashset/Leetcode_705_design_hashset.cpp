@@ -21,10 +21,15 @@
 *   C++不能这么使用((type *)0)->member，替换的方式：
 *   #include <stddef.h>
 *   offsetof(type, member)
+* 
+*   or
+* 
+*   不包含stddef.h宏，直接使用stddef.h中offsetof的定义：#define offsetof(type, member)  __builtin_offsetof(type, member)  // GCC/Clang 内部实现
+*   __builtin_offsetof(type, member)
 */
 
 #include <iostream>
-#include <stddef.h>
+//#include <stddef.h>
 #define MAXHASH 1333
 #define NULL 0
 using namespace std;
@@ -35,7 +40,7 @@ using namespace std;
 #define list_for_each(pos, head) \
         for (pos=(head)->next; pos != head; pos=pos->next)
 #define list_entry(ptr, type, member) \
-        ((type *)((char *)ptr - (unsigned long)(offsetof(type, member))))
+        ((type *)((char *)ptr - (unsigned long)(__builtin_offsetof(type, member))))
  //       ((type *)((char *)ptr - (unsigned long)(&((type *)0)->member)))
 
 #define SET_T_INIT(node, val) \
