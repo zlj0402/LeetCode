@@ -16,6 +16,11 @@
 *   存储103.29MB仅战胜8.2%
 * 
 * 虽然，效率没那么高，但也算是第一次用list_head的结构来完成的第一题；
+* 
+* ps:
+*   C++不能这么使用((type *)0)->member，替换的方式：
+*   #include <stddef.h>
+*   offsetof(type, member)
 */
 
 #include <iostream>
