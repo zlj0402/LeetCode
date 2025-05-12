@@ -1,5 +1,6 @@
 ﻿//
 // Created by liangj.zhang on 12/5/2025
+// URL: https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/submissions/629293547/
 //
 
 // 思路：最开始都没有注意到平衡二字，只想着不要弄成单链表的形式就行，给中间和开头两个位置的元素，交换一下位置，就结束问题了；
