@@ -1,5 +1,7 @@
 ﻿//
 // Created by liangj.zhang on 21/5/2025
+// level: medium
+// URL: https://github.com/zlj0402/LeetCode/blob/master/LeetCode/SlidingWindow/Leetcode_3_Longest_Substring_Without_Repeating_Characters/Leetcode_3_Longest_Substring_Without_Repeating_Characters/Leetcode_3_Longest_Substring_Without_Repeating_Characters.cpp
 //
 
 // ps:
