@@ -2,19 +2,19 @@
 // Created by liangj.zhang on 24/5/2025
 //
 
-// 思路：基于 rank 优化的 压缩路劲的 并查集
+// 思路：基于 size 优化的 压缩路劲的 并查集
 //      这题我的做法是：
 //          1. 遍历每个 account 中的 email 账号
-//          2. 用 unordered_map<email, vector<int>> 来存储一个 email 对应的 account 的 index;
-//          3. 遍历上面得到的 um<string, vector<int>>; 并查集关联 account 
-//          4. 遍历 accounts 中的每个 account, 根据 find(account_index) 找到关系树中的 root => 得到一个 um<int, set<string>> 【每个 email 都会被添加一遍】
-//          5. 根据 um<int, set<string>>，转换得到一个 vector<vector<string>>
+//          2. 用 um<email, vector<int>> 来存储一个 email 对应的 account 的 index; 和
+//                 um<int, set<email>> 来存储 account 的 index 对应的 email;
+//          3. 遍历上面得到的 um<string, vector<int>>; 并查集关联 account，同时在关联的时候，进行 email 的合并
+//          4. 根据 um<int, set<string>>，转换得到一个 vector<vector<string>>
 //
-// ps: 写完觉得，这题完全可以采用，基于 size 的优化，并 unionElements 中，就进行 email 的收集；
+// ps: 确实比上一种，快了一点点，看着时间效率图，终于算是跟上大部队的尾部；但还是很慢...
 // 
 // rank:
-// 时间：176 ms, 击败 8.17%
-// 空间：50.95 MB, 击败 7.73%
+// 时间：113 ms, 击败 14.66%
+// 空间：60.11 MB, 击败 5.02%
 //
 
 
