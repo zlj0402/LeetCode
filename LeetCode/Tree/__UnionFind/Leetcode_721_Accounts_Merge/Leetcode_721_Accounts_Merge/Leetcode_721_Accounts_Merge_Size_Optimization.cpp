@@ -1,5 +1,6 @@
 //
 // Created by liangj.zhang on 24/5/2025
+// URL: https://leetcode.cn/problems/accounts-merge/submissions/632126753/
 //
 
 // 思路：基于 size 优化的 压缩路劲的 并查集
@@ -51,9 +52,12 @@ private:
 
     int find(int p) {
 
-        if (p != parent[p])
-            parent[p] = find(parent[p]);
-        return parent[p];
+        while (p != parent[p]) {
+
+            parent[p] = parent[parent[p]];
+            p = parent[p];
+        }
+        return p;   // return 时 p 一定是 root 节点
     }
 
     void unionElements(int p, int q) {
