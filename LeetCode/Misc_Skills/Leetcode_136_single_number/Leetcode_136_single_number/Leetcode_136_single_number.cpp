@@ -3,6 +3,10 @@
 // 
 // URL: https://leetcode.cn/problems/single-number/description
 // 
+// Difficulty: Easy
+// 
+// Label: Skill
+// 
 // 思路：
 //	【1】
 //	+ 这题的做法有很多种，既然分类为技巧类型的题，领略之后，确实有种醍醐灌顶，茅塞顿开的感觉；
