@@ -24,7 +24,7 @@
 using namespace std;
 
 
-namespace RandomNumbers {
+namespace SortTestHelper {
 
     // 生成有n个元素的随机数组,每个元素的随机范围为[rangeL, rangeR]
     int* generateRandomArray(int n, int range_l, int range_r) {
@@ -53,7 +53,7 @@ namespace RandomNumbers {
         for (int i = 0; i < swapTimes; i++) {
             int posx = rand() % n;
             int posy = rand() % n;
-            swap(arr[posx], arr[posy]);
+            std::swap(arr[posx], arr[posy]);
         }
 
         return arr;
@@ -93,6 +93,83 @@ namespace RandomNumbers {
 
         return;
     }
-}
 
-#endif
+    // 判断arr数组是否有序
+    template<typename T>
+    bool isSorted(T arr[], int n) {
+
+        for (int i = 0; i < n - 1; i++)
+            if (arr[i] > arr[i + 1])
+                return false;
+
+        return true;
+    }
+
+    // 排序操作是否有错误
+    template<typename T>
+    bool isPermutation(T origin[], T src[], int n, bool debug) {
+
+        bool ret = false;
+
+        // 判断操作之后的，src每个值的个数，是否和之前origin值的个数相同
+        map<T, int> ori_map;
+        map<T, int> src_map;
+
+        for (int i = 0; i < n; i++) {
+            ++ori_map[origin[i]];   // 下标 [] 自动初始化为 0，无需判断是否存在
+            ++src_map[src[i]];
+        }
+
+        ret = (ori_map == src_map);
+        if (!ret && debug) {
+            int cnt = 0;
+            cout << "----- ori_map -----" << endl;
+            for (const auto& pair : ori_map) {
+                cout << pair.first << " => " << pair.second << '\n';
+                cnt += pair.second;
+            }
+            cout << "total count: " << cnt << endl;
+            cnt = 0;
+
+            cout << "----- src_map -----" << endl;
+            for (const auto& pair : src_map) {
+                cout << pair.first << " => " << pair.second << '\n';
+                cnt += pair.second;
+            }
+            cout << "total count: " << cnt << endl;
+        }
+
+        return ret;
+    }
+
+    // 测试sort排序算法排序arr数组所得到结果的正确性和算法运行时间
+    template<typename T>
+    void testSort(const string& sortName, void (*sort)(T[], int), T arr[], int n) {
+
+        clock_t startTime = clock();
+        sort(arr, n);
+        clock_t endTime = clock();
+        cout << sortName << " : " << double(endTime - startTime) / CLOCKS_PER_SEC << " s" << endl;
+
+        assert(isSorted(arr, n));
+
+        return;
+    }
+
+    // 测试sort排序算法排序arr数组所得到结果的正确性和算法运行时间 -- 确定相同值
+    template<typename T>
+    void testSort(const string& sortName, void (*sort)(T[], int), T origin[], T src[], int n) {
+
+        clock_t startTime = clock();
+        sort(src, n);
+        clock_t endTime = clock();
+        cout << sortName << " : " << double(endTime - startTime) / CLOCKS_PER_SEC << " s" << endl;
+
+        assert(isSorted(src, n));
+        assert(isPermutation(origin, src, n, false));
+
+        return;
+    }
+};
+
+#endif //SORTTESTHELPER_H
