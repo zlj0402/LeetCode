@@ -40,3 +40,12 @@ class Solution:
                 return [i + 1, j + 1]
                 
         return []
+    
+def main():
+    target = 9
+    numbers = [2,7,11,15]
+    res = Solution().twoSum(numbers, target)
+    print(res[0], res[1])
+    
+if __name__ == "__main__":
+    main()
