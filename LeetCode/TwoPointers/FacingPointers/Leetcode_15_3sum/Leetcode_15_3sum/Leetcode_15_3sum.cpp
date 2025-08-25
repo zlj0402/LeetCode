@@ -15,6 +15,8 @@
 //                  2. 如果能和 idx m(m < i) 组成三元组
 //                  3. 那当之前 idx 经过 m 位置时，
 //                  4. 就已经找到 (nums[m], nums[i], nums[k]) 这个三元组了(k 是另外一个确定其二，必定确定的位置)
+// updated on 25/8/2025:
+//          + 添加 思路2.2 的小优化，顺便重写一遍；
 
 // 思路：
 // 1. 先给数组排个序；
@@ -40,18 +42,69 @@
 // 思路2 -- rank:
 // 时间效率：47 ms, 击败 90.27%
 // 空间效率: 28.49 MB, 击败 56.21%
+//  
+// 思路2.2： 基于思路2之上的小优化
+//      1. 当内循环，前两个数 & 当前遍历位置，三数之和 > 0，那么后面的数和 当前遍历位置之和，只会更大；
+//      2. .......，后两个数 & 当前遍历位置，三叔之和 < 0，那么所有可能的组合都不会 大于0；没有遍历的必要了；
+// 
+// 思路2.2 -- rank:
+// 时间效率：42 ms, 击败 96.09%
+// 空间效率：28.4 MB, 击败 77.53%
 //
 
 #include <iostream>
+#include <vector>
+using std::vector;
 using std::cout;
 using std::endl;
 
-#include <vector>
 #include <numeric>
 #include <algorithm>
-using std::vector;
 using std::swap;
 
+// 【2.2】
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        
+        int size = nums.size();
+        vector<vector<int>> res;
+
+        sort(nums.begin(), nums.end());
+        
+        for (int i = 0; i < size - 2; ++i) {
+
+            if (i != 0 && nums[i] == nums[i - 1])
+                continue;
+
+            if (nums[i] + nums[i + 1] + nums[i + 2] > 0 ||
+                nums[i] + nums[size - 2] + nums[size - 1] < 0)
+                continue;
+
+            int j = i + 1;
+            int k = size - 1;
+            while (j < k) {
+                
+                int sum = nums[i] + nums[j] + nums[k];
+                if (sum < 0)
+                    ++j;
+                else if (sum > 0)
+                    --k;
+                else {
+                    res.push_back(vector<int>{nums[i], nums[j++], nums[k--]});
+                    while (j < k && nums[j] == nums[j - 1]) ++j;
+                    while (j < k && nums[k] == nums[k + 1]) --k;
+                }
+            }
+
+        }
+
+        return res;
+    }
+};
+
+// 【2】
+/*
 class Solution {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
@@ -93,6 +146,7 @@ public:
         return ret;
     }
 };
+*/
 
 int main() {
 
