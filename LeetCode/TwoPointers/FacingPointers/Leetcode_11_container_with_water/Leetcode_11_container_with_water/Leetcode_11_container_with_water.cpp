@@ -30,6 +30,35 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+// 【1.3】只是觉得代码很简单，留下这一版
+/* 
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        
+        int l = 0;
+        int r = height.size() - 1;
+        int max_area = 0;
+
+        while (l < r) {
+            
+            int area = std::min(height[l], height[r]) * (r - l);
+            if (area > max_area)
+                max_area = area;
+            
+            if (height[l] <= height[r]) {
+                while (++l < r && height[l] <= height[l - 1]);
+            }
+            else {
+                while (l < --r && height[r] <= height[r + 1]);
+            }
+        }
+
+        return max_area;
+    }
+};
+*/
+
 // 【1.2】
 class Solution {
 public:
