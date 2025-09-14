@@ -62,6 +62,6 @@ class Solution:
     def searchRange(self, nums: List[int], target: int) -> List[int]:
         first_pos = self.lower_bound(nums, target)
         if first_pos == len(nums) or nums[first_pos] != target:
-            return (-1, -1)
+            return [-1, -1]
         sec_pos = self.lower_bound(nums, target + 1) - 1
-        return (first_pos, sec_pos)
+        return [first_pos, sec_pos]
