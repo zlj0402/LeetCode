@@ -45,39 +45,34 @@ def cpp_comment_to_python_docstring(cpp_comment: str) -> str:
 # ==== 测试 ====
 cpp_comment = """
 /**
- * @brief: Leetcode_18_四数之和
- * @link: https://leetcode.cn/problems/4sum/description/
+ * @brief: Leetcode_162_寻找峰值
+ * @link: https://leetcode.cn/problems/find-peak-element/description/
  * @author: liangj.zhang
- * @date: 27/8/2025
+ * @date: 23/9/2025
  * 
  * @Difficulty: Medium
  * 
- * @Label: Two Pointers(Facing)
+ * @Label: Binary Search
  * 
- * @Retrospect(worthy 1 - 5): 2
+ * @Retrospect(worthy 1 - 5): 3
  * 
  * @thoughts:
- *      + 【思路 1】排序 + 相向双指针 + 优化剪枝
- *          思路跟三数之和还是一样的，只是外面多套了一层枚举，时间复杂度是 O(n^3)
- *          + 分析：
- *              + 时间复杂度：排序O(nlogn) + 嵌套的相向双指针 O(n^3) ==> O(n^3)
- *              + 空间复杂度：没有申请额外的空间 O(1)
- *          + rank:
- *              + 时间效率：0 ms, 击败 100%
- *              + 空间效率：17.09 MB, 击败 60.48%
- *
- *      + 【思路 1.2】以递归的方式实现（也是多数之和的模板了）
- *          本质上，还是上面的思路，做法是以递归的方式实现，5、6数之和，也能按照这个模板来；
- *          这是别人写的，有更优化的小点，在前 k 个数之和 > target 的情况：
- *              最前面的 k 个数 > target => 直接 break
- *              最后面的 k - 1 数 + 枚举确定的数 < target，枚举还能往后改变情况
- *              但是前 k 个数 > target 情况改变不了
- *          + 分析：
- *              + 时间复杂度：排序O(nlogn) + 嵌套的相向双指针 O(n^3) ==> O(n^3)
- *              + 空间复杂度：至少递归 n - k - 1 次 ==> O(n)
- *          + rank:
- *              + 时间效率：3 ms, 击败 90.18%
- *              + 空间效率：17.68 MB, 击败 5.28%
+ *  + 【思路 1】：二分查找 -- 峰值 -- 红蓝染色
+ *      看了灵神的视频：https://www.bilibili.com/video/BV1QK411d76w
+ *      峰值这题，竟然也能用二分；
+ *      还好这题，只用求任意一个峰顶的下标；
+ *      
+ *      只求得一个峰顶，左侧染红色，右侧染蓝色，染色，即是告诉自己不用再去考虑的部分；
+ *      nums[mid] < nums[mid + 1] => 处于峰顶左侧（，mid 及 mid 左侧染红色，l = mid + 1
+ *      else 即 
+ *      nums[mid] >= nums[mid + 1] => 处于峰顶，或者峰顶的右侧（，mid 及 mid 右侧染蓝色，r = mid -1
+ * 
+ *      + 分析：
+ *          + 时间复杂度：O(logn)
+ *          + 空间复杂度：O(1)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：12.19 MB, 击败 87.95%
  */
 """
 
