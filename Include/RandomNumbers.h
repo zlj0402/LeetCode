@@ -4,8 +4,8 @@
 // URL: https://github.com/liuyubobobo/Play-with-Algorithms/tree/master/02-Sorting-Basic/Course%20Code%20(C%2B%2B)
 //
 
-#ifndef SORTTESTHELPER_H
-#define SORTTESTHELPER_H
+#ifndef RANDOMNUMBERS_H
+#define RANDOMNUMBERS_H
 
 #include <iostream>
 #include <algorithm>
