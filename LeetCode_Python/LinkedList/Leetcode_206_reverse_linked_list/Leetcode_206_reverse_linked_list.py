@@ -2,10 +2,7 @@
 @brief: Leetcode_206_反转链表
 @link: https://leetcode.cn/problems/reverse-linked-list/description/
 @author: liangj.zhang
-@date: 11/10/2024
-
-@updated: 
-    + 11/10/2025 -- add 不带虚拟头结点思路
+@date: 11/10/2025
 
 @Difficulty: Easy
 
@@ -14,7 +11,7 @@
 @Retrospect(worthy 1 - 5): 4
 
 @thoughts:
-+ 【思路 1】：单链表反转 -- 带虚拟头结点的方式
++ 【思路 1】：单链表反转 -- 带虚拟头结点的方式 -- 11/10/2025
     dummy_head  ->  1  ->  2  ->  3  ->  4  ->  5
                      cur
 
@@ -33,6 +30,13 @@
                                            4  ->  5
     dummy_head  ->  3  ->  2  ->  1  ↗
     以此类推...
+    
+    分析：
+        - 时间复杂度：O(n)
+        - 空间复杂度：O(1)
+    rank:
+        - 时间效率：0 ms, 击败 100%
+        - 空间效率：18.23 MB, 击败 86.55%
 
 + 【思路 2】：单链表反转 -- 不带虚拟头结点的方式 -- 11/10/2025
 初始状态：
@@ -95,9 +99,6 @@
     rank:
         - 时间效率：0 ms, 击败 100%
         - 空间效率：18.41 MB, 击败 48.85%
-
-@ps:
-    + 目前只写了不用 dummy_head 的方式
 """
 
 import os
@@ -117,7 +118,22 @@ from PyLeetcode.sort_test_helper import SortTestHelper
 #         self.val = val
 #         self.next = next
 
+#【思路 1】：单链表反转 -- 带虚拟头结点的方式
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head is None: return None
+        dummy_head = ListNode(-1, head)
+        cur = head
+        while cur.next is not None:
+            next_node = cur.next
+            cur.next = next_node.next
+
+            next_node.next = dummy_head.next
+            dummy_head.next = next_node
+        return dummy_head.next
+
 #【思路 2】：单链表反转 -- 不带虚拟头结点的方式 -- 11/10/2025
+"""
 class Solution:
     def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
         cur = head
@@ -130,6 +146,7 @@ class Solution:
             p = cur
             cur = next
         return p
+"""
 
 def main():
     head = SortTestHelper.generate_random_array(10, 0, 100)
