@@ -29,7 +29,6 @@
          + 空间效率：18.14 MB, 击败 92.88%
 """
 
-from typing import Optional
 import os
 import sys
 
@@ -38,11 +37,9 @@ print(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))) #f:\
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from typing import Optional
-# from PyLeetcode.LinkedList.LinkedList import ListNode
+
 from Include.PyLeetcode.LinkedList.LinkedList import ListNode
 from Include.PyLeetcode.sort_test_helper import SortTestHelper
-
-# from Include.PyLeetcode.sort_test_helper import SortTestHelper
 
 # Definition for singly-linked list.
 # class ListNode:
