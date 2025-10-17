@@ -37,7 +37,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 from typing import Optional
 
 from Include.PyLeetcode.LinkedList.LinkedList import ListNode
-from Include.PyLeetcode.sort_test_helper import SortTestHelper
 
 # Definition for singly-linked list.
 # class ListNode:
