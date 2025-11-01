@@ -10,10 +10,10 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "D:/Tools/MSYS2/ucrt64/bin/g++.exe",
+            "compilerPath": "E:/zlj/Programs/msys64/ucrt64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "windows-gcc-x86"
+            "intelliSenseMode": "windows-gcc-x64"
         }
     ],
     "version": 4
