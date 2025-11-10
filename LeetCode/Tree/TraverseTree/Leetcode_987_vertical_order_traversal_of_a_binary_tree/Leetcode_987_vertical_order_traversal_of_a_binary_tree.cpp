@@ -19,6 +19,8 @@
  * 
  *      + 值得回顾的点是：比较方式的几种写法，后续都会补上：
  *          1. operator< 重载
+ *          2. 使用 std::tie 实现运算符重载
+ *          3. 自定义 set 的比较器；
  * 
  *      + 分析：
  *          + 时间复杂度：O(n)，dfs 一遍，分组时一遍 + multiset 中的排序 O(nlogn) => O(nlogn)
@@ -45,31 +47,94 @@ using std::vector;
  */
 
 #include <set>
+#include <tuple>
 using std::multiset;
 
 class E {
 public:
     int x, y, z;    // x 是 列值，y 是横轴值，z 是 value
     E(int x, int y, int z) : x(x), y(y), z(z) {}
+};
 
-    bool operator < (const E& e) const {
+struct Cmp{
 
-        // if (x < e.x) return true;
-        // else if (x == e.x) {
-        //     if (y < e.y) return true;
-        //     else if (y == e.y) {
-        //         if (z < e.z)
-        //             return true;
-        //     }
-        // }
+    bool operator()(const E& a, const E& b) const {
+
+        if (a.x != b.x) return a.x < b.x;
+        if (a.y != b.y) return a.y < b.y;
+        return a.z < b.z;
+    }
+};
+
+class Solution {
+
+private:
+    static vector<int> tmp;
+    static multiset<E, Cmp> rec;
+    static vector<vector<int>> ans;
+
+    void __verticalTraversal(TreeNode* root, int y, int x) {
+
+        if (!root) return;
+
+        rec.insert(E(x, y, root->val));
+        __verticalTraversal(root->left, y + 1, x - 1);
+        __verticalTraversal(root->right, y + 1, x + 1);
+    }
+public:
+    vector<vector<int>> verticalTraversal(TreeNode* root) {
+        
+        rec.clear();
+        ans.clear();
+
+        __verticalTraversal(root, 0, 0);
+
+        int last_x = rec.begin()->x;    // 原来错误的写法：没取第一个值作为初始值，多 push 一个空的 vector<>
+        tmp.clear();
+        for (auto& e : rec) {
+
+            if (last_x != e.x) {
+
+                ans.push_back(tmp);
+                tmp.clear();
+                last_x = e.x;
+            }
+            tmp.emplace_back(e.z);
+        }
+        ans.push_back(tmp); // 原来错误的写法：忘记 push 最后一组
+
+        return ans;
+    }
+};
+
+vector<int> Solution::tmp = vector<int>();
+vector<vector<int>> Solution::ans = vector<vector<int>>();
+multiset<E, Cmp> Solution::rec = multiset<E, Cmp>();
+
+/*
+class E {
+public:
+    int x, y, z;    // x 是 列值，y 是横轴值，z 是 value
+    E(int x, int y, int z) : x(x), y(y), z(z) {}
+
+    bool operator<(const E& e) const {
+
+        // 【写法 1.1】最原始的比较方式
+        if (x != e.x) return x < e.x;
+        if (y != e.y) return y < e.y;
+        return z < e.z;
 
         // return false;
 
-        return (x < e.x) ? true :
-               (x > e.x) ? false :
-               (y < e.y) ? true :
-               (y > e.y) ? false :
-               (z < e.z);
+        // 【写法 1.2】标准的运算符重载
+        // return (x < e.x) ? true :
+        //        (x > e.x) ? false :
+        //        (y < e.y) ? true :
+        //        (y > e.y) ? false :
+        //        (z < e.z);
+        
+        // 【写法 1.3】<tuple>, std::tie()
+        return std::tie(x, y, z) < std::tie(e.x, e.y, e.z);
     }
 };
 
@@ -116,3 +181,4 @@ public:
 vector<int> Solution::tmp = vector<int>();
 vector<vector<int>> Solution::ans = vector<vector<int>>();
 multiset<E> Solution::rec = multiset<E>();
+*/
