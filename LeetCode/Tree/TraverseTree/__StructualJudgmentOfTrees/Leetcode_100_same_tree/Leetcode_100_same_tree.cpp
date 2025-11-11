@@ -19,6 +19,17 @@
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
  *          + 空间效率：12.54 MB, 击败 76.45%
+ * 
+ *      + 【写法 2】：灵神的递归写法
+ *          非常 nice，非常优雅；
+ *          也有稍稍不足：不能提前终止，栈的使用，必定等于树的高度
+ *          
+ *          + 分析：
+ *              + 时间复杂度：O(n)
+ *              + 空间复杂度：O(h)
+ *          + rank:
+ *              + 时间效率：0 ms, 击败 100%
+ *              + 空间效率：12.65 MB, 击败 46.87%
  */
 
 #include "../../../../../Include/Leetcode/Tree/Tree.h"
@@ -56,5 +67,15 @@ public:
         ret = true;
         __isSameTree(p, q);
         return ret;
+    }
+};
+
+// 【思路 1】：【写法 2】
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        
+        if (!p || !q) return p == q;
+        return p->val == q->val && isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
     }
 };
