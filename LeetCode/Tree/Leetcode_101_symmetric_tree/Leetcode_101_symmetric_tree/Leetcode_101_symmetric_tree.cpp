@@ -32,6 +32,11 @@
 *       rank:
 *           时间效率：0 ms, 击败 100%
 *           空间效率：18.14 MB, 击败 56.62%
+*   【2.3】-- 递归，剪枝版
+*       这种比上面的 2.2 版空间效率还高一点
+*       rank:
+*           时间效率：0 ms, 击败 100%
+*           空间效率：18.00 MB, 击败 88.88%
 */
 
 
@@ -49,6 +54,31 @@
 
 #include "Leetcode/Tree/Tree.h"
 using Leetcode::Tree::BinaryTree::TreeNode;
+
+//【2.3】-- 递归，剪枝版
+class Solution {
+private:
+    bool ret;
+    void __isSymmetric(TreeNode* p, TreeNode* q) {
+
+        if (ret && (!p ^ !q)) ret = false;
+        if (!p || !q) return;
+        if (ret && p->val != q->val) ret = false;
+
+        if (!ret) return;
+        
+        __isSymmetric(p->left, q->right);
+        __isSymmetric(p->right, q->left);
+    }
+
+public:
+    bool isSymmetric(TreeNode* root) {
+        
+        ret = true;
+        __isSymmetric(root->left, root->right);
+        return ret;
+    }
+};
 
 // 【1】
 //#include <stack>
