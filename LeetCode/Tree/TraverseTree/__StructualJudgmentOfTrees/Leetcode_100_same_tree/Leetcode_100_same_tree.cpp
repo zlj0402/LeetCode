@@ -6,7 +6,7 @@
  * 
  * @Difficulty: Easy
  * 
- * @Label: Tree(Structual Judgment Of Tress)
+ * @Label: Tree(Structual Judgment Of Trees)
  * 
  * @Retrospect(worthy 1 - 5): 3
  * 
