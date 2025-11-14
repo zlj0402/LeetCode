@@ -3,6 +3,9 @@
 * @link: https://leetcode.cn/problems/binary-tree-right-side-view/description
 * @author: liangj.zhang
 * @date: 19/6/2025
+*
+* @update: 
+*   + 14/11/2025: 第二次写，一模一样的写法；
 * 
 * @Difficulty: Medium
 * 
@@ -14,10 +17,19 @@
 *	从右边看，右边比左边更有优先级；
 *	并且，记录的节点值，是从上往下；
 *	那么，我们采用先序遍历，且右节点遍历顺序，早于左节点；
+*   （在向下的过程中，就将深度传递开来； 不采用“回”的时候，将高度返回回来）
+*   
+*   + 分析：
+*       + 时间复杂度：O(n)
+*       + 空间复杂度：O(h), h 为树的高度
 * 
-*	rank: 
-*		时间效率：0 ms, 击败 100%
-*		空间效率：14.52 MB, 击败 97.22%
+*	+ rank: 
+*       + 第 1 次写：
+*		    时间效率：0 ms, 击败 100%
+*		    空间效率：14.52 MB, 击败 97.22%
+*       + 第 2 次写：
+*           时间效率：0 ms, 击败 100%
+*           空间效率：14.46 MB, 击败 99.2%
 */
 
 /**
@@ -37,6 +49,38 @@
 using Leetcode::Tree::BinaryTree::TreeNode;
 using std::vector;
 
+// 第 2 次写：写完发现跟第一次完全一样的写法，不过这次一次就通过了；
+class Solution {
+private:
+    int max_depth;
+    static vector<int> rec;
+    void __rightSideView(TreeNode* root, int depth) {
+
+        if (!root) return;
+
+        if (max_depth < depth) {
+            
+            rec.push_back(root->val);
+            max_depth = depth;
+        }
+        __rightSideView(root->right, depth + 1);
+        __rightSideView(root->left, depth + 1);
+    }
+
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        
+        max_depth = -1;
+        rec.clear();
+        __rightSideView(root, 0);
+        return rec;
+    }
+};
+
+vector<int> Solution::rec = vector<int>();
+
+// 第 1 次写
+/*
 class Solution {
 private:
     int max_level;
@@ -65,3 +109,4 @@ public:
         return res;
     }
 };
+*/
