@@ -32,7 +32,7 @@ print(os.path.join(os.path.dirname(__file__)))
 print(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))) #f:\Code\zljgit\LeetCode
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
-from typing import Optional
+from typing import List, Optional
 
 from Include.PyLeetcode.Tree.Tree import TreeNode
 
