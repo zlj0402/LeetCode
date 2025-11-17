@@ -47,7 +47,7 @@ class Solution:
         self.__max_depth = 0
         self.__lst = []
 
-    def __rightSideView(self, root: Optional[TreeNode], depth: int) -> List[int]:
+    def __rightSideView(self, root: Optional[TreeNode], depth: int) -> None:
         if not root: return
         if self.__max_depth < depth:
             self.__max_depth = depth
