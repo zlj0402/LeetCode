@@ -3,6 +3,9 @@
 * @link: https://leetcode.cn/problems/invert-binary-tree/description
 * @author: liangj.zhang
 * @date: 18/6/2025
+*
+* @updated:
+*   + 18/11/2025: add recursion way 【3】
 * 
 * @thoughts:
 * 
@@ -24,11 +27,15 @@
 *       时间效率：0 ms, 击败 100%
 *       空间效率：12,42 MB, 击败 8.53%
 * 
-* 【3】-- 递归也可以
+* 【3】-- 递归也可以 -- 18/11/2025
 *   看了题解，递归也是可以解决的，以后再写吧
+*   + 分析：
+*       + 时间复杂度：O(n)
+*       + 空间复杂度：O(h)
+*   + rank:
+*       + 时间效率：0 ms, 击败 100%
+*       + 空间效率：12.16 MB, 击败 85.34%
 */
-
-
 
 /**
  * Definition for a binary tree node.
@@ -43,8 +50,27 @@
  */
 #include "Leetcode/Tree/Tree.h"
 #include <stack>
+#include <iostream>
+#include <cstdio>
 using std::stack;
 using Leetcode::Tree::BinaryTree::TreeNode;
+
+// 【3】-- 递归也可以 -- 18/11/2025
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+
+        if (!root) return NULL;
+
+        // swap(root->left, root->right);
+        TreeNode* tmp = root->left;
+        root->left = root->right;
+        root->right = tmp;
+        invertTree(root->left);
+        invertTree(root->right);
+        return root;
+    }
+};
 
 // 【2】
 class Solution {
