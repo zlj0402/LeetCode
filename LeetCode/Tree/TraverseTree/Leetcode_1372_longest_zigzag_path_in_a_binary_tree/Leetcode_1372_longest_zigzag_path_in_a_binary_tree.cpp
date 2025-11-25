@@ -8,6 +8,8 @@
  * 
  * @Label: Tree(dfs)
  * 
+ * @Retrospect(worthy 1 - 5): 4
+ * 
  * @thoughts:
  *  + 【思路 1】：递归 & 剪枝
  *      遍历每个节点，拿这个节点，当新的一次 root 节点，进行题目中的那总交错版的 dfs 遍历；
