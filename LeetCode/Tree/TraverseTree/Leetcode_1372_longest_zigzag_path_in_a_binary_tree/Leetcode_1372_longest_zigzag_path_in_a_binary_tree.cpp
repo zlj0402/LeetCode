@@ -21,7 +21,23 @@
  *      + rank:
  *          + 时间效率：151 ms, 击败 100%
  *          + 空间效率：141.98 MB, 击败 5.07%
+ * + 【思路 2】：递归
+ *      一个节点 node, 是从其父节点 root 的 left 过来的，那么按照该题目的规则，node 会作为右转折点； 否则，以该 node 节点的 root 为新的起点，作为第 1 个左转折点
+ *                    是从其父节点 root 的 right 过来的，那么按照该题目的规则，node 会作为左转折点； 否则，以该 node 节点的 root 为新的起点，作为第 1 个右转折点
+ *      反正，一个节点 node，存在的话，它既会作为左转折点，也会作为右转折点，如果它不能从父节点继承已有的长度，那么就以 父节点为起始，该节点为第 1 个起点；
+ *      + 分析：
+ *          + 时间复杂度：O(n)
+ *              + ps: 【思路 1】虽然也是 O(n)，但是递归的时候，重复的加了很多重复的节点；
+ *          + 空间复杂度：O(h)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：92.2. MB, 击败 93.81%
  */
+
+#include <cmath>
+#include "../../../../Include/Leetcode/Tree/Tree.h"
+using namespace std;
+using Leetcode::Tree::BinaryTree::TreeNode;
 
 /**
  * Definition for a binary tree node.
@@ -34,9 +50,20 @@
  *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
+class Solution {
+private:
+    int longestZigZag(TreeNode* root, int l, int r) {
 
-#include "../../../../Include/Leetcode/Tree/Tree.h"
-using Leetcode::Tree::BinaryTree::TreeNode;
+        if (!root) return std::max(l, r);
+
+        return std::max(longestZigZag(root->left, 0, l + 1), longestZigZag(root->right, r + 1, 0));
+    }
+public:
+    int longestZigZag(TreeNode* root) {
+        
+        return longestZigZag(root, 0, 0) - 1;
+    }
+};
 
 #include <unordered_set>
 using std::unordered_set;
