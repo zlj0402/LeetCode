@@ -21,23 +21,18 @@ private:
     int limit;
     bool __sufficientSubset(TreeNode* parent, bool ln, TreeNode* root, int sum) {
 
-        if (!root && parent) return !parent->left && !parent->right ? sum >= this->limit : false;   // parent 是子节点时，结算 sum；&& parent -> 排除根节点
+        if (!root->left && !root->right) return sum >= this->limit;
 
-        bool left = __sufficientSubset(root, true, root->left, sum + root->val);
-        bool right = __sufficientSubset(root, false, root->right, sum + root->val);
+        bool left{false}, right{false};
 
-        // if (!(left || right)) {
+        if (root->left) left = __sufficientSubset(root, true, root->left, sum + root->val);
 
-        //     if (ln)
-        //         parent->left = nullptr;
-        //     else
-        //         parent->right = nullptr;
-        // }
+        if (root->right) right = __sufficientSubset(root, false, root->right, sum + root->val);
 
-        if (!(left || right)) {
-
-            root->left = nullptr;
-            root->right = nullptr;
+        if (!left && !right) {
+            
+            if (root->left) root->left = nullptr;
+            if (root->right) root->right = nullptr;
         }
 
         return left || right;
