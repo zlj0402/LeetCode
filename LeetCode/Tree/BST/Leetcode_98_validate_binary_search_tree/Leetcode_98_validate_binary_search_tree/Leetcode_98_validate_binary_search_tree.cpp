@@ -33,6 +33,18 @@
  *      + rank:
  *          + 时间效率：0 ms，击败 100%
  *          + 空间效率：21.45 MB, 击败 72.2%
+ * 
+ *  + 【思路 2】：preOrder -- 3/12/2025
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：21.58 MB, 击败 34.97%
+ * 
+ *  + 【思路 3】：postOrder -- 3/12/2025
+ *      我觉得是三种遍历最难的一种，
+ *      我把子节点要上传的范围弄的很复杂，
+ *      灵神的做法，就是子树的最小值和最大值，
+ *      我想的是，作为左子树，不断保留最大值，向上缩小左边界
+ *               作为右子树，不断保留最小值，向上缩小右边界
  */
 
 /**
@@ -49,7 +61,54 @@
 
 #include "Leetcode/Tree/Tree.h"
 #include <climits>
+#include <tuple>
 using Leetcode::Tree::BinaryTree::TreeNode;
+
+// postOrder -- 2025.12.3 -- 我觉得三种写法最难写的
+class Solution {
+private:
+    bool res;
+    std::tuple<long long, long long> postOrder(TreeNode* root) {
+
+        if (!root) return {LONG_LONG_MAX, LONG_LONG_MIN};
+
+        auto[l_min, l_max] = postOrder(root->left);
+        auto [r_min, r_max] = postOrder(root->right);
+        long long val = root->val;
+        if (val <= l_max || val >= r_min)
+            return {LONG_LONG_MIN, LONG_LONG_MAX};
+        
+        return {std::min(l_min, val), std::max(val, r_max)};
+
+    }
+public:
+    bool isValidBST(TreeNode* root) {
+        return std::get<1>(postOrder(root)) != LONG_LONG_MAX;
+    }
+};
+
+// preOrder -- 2025.12.3
+class Solution {
+private:
+    bool res;
+    void preOrder(TreeNode* root, long long lr, long long rr) { // left range, right range
+
+        if (!res) return;
+
+        if (root->val > lr && root->val < rr);
+        else res = false;
+
+        if (root->left) preOrder(root->left, lr, root->val);
+        if (root->right) preOrder(root->right, root->val, rr);
+    }
+public:
+    bool isValidBST(TreeNode* root) {
+        
+        res = true;
+        preOrder(root, LONG_LONG_MIN, LONG_LONG_MAX);
+        return res;
+    }
+};
 
 // inOrder 1 -- 2025.12.2
 class Solution {
