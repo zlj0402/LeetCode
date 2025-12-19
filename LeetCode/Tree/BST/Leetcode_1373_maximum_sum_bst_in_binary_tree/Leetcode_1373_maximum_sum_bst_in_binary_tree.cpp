@@ -47,7 +47,7 @@ using namespace Leetcode::Tree::BinaryTree;
 
 class Solution {
 private:
-    int max = INT_MIN;
+    int max;
 
     // void update3(int lsum, int rsum, int root_val) {
 
