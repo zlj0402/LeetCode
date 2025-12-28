@@ -97,6 +97,11 @@ namespace Leetcode {
 				return root;
 			}
 
+			TreeNode* buildTreeFromStringArray(const string& text) {
+
+				return buildTree(parseArray(text));
+			}
+
 			string levelTraverse(TreeNode* root, int nullFlag = INT_MIN) {
 				if (!root) return "[]";
 
