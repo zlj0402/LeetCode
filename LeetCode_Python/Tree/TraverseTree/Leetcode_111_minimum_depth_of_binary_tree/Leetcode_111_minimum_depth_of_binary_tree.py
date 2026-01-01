@@ -4,6 +4,9 @@
 @author: liangj.zhang  
 @date: 4/11/2025  
 
+@updated: 
+  + 1/1/2026: add BFS
+
 @Difficulty: Easy  
 
 @Label: Tree  
@@ -31,6 +34,16 @@
      从上到下，从左到右，遇到第一个左右节点都没有的节点，即可退出；  
      ps: 内层循环的退出条件，是当前层的节点数遍历完；  
          外层循环中，每次层计数 +1。  
+
+    ----
+    遇到第一个叶子节点，就返回结果；
+
+    + 分析：
+      + 时间复杂度：O(n)
+      + 空间复杂度：O(n)
+    + rank:
+      + 时间效率：0 ms, 击败 100%
+      + 空间效率：42.79 M, 击败 91.33%
 """
 
 import os
@@ -50,6 +63,26 @@ from Include.PyLeetcode.Tree.Tree import TreeNode
 #         self.val = val
 #         self.left = left
 #         self.right = right
+
+from collections import deque
+
+class Solution:
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        if not root: return 0
+
+        depth = 0
+        q = deque([root])
+        while q:
+            depth += 1
+            size = len(q)
+            for _ in range(size):
+                cur = q.popleft()
+                if cur.left: q.append(cur.left)
+                if cur.right: q.append(cur.right)
+
+                if not cur.left and not cur.right:
+                    return depth
+
 class Solution:
     def minDepth(self, root: Optional[TreeNode]) -> int:
         if root is None: return 0
