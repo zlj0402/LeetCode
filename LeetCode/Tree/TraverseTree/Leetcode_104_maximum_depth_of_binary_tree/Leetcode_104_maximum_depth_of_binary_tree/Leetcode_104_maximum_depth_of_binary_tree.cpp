@@ -18,6 +18,9 @@
  * @author: liangj.zhang
  * @date: 3/11/2025
  * 
+ * @updated:
+ *  + 1/1/2026: add 【写法 3】：BFS
+ * 
  * @Difficulty: Easy
  * 
  * @Label: Tree
@@ -35,6 +38,14 @@
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
  *          + 空间效率：18.55 MB, 击败 90.33%
+ * 
+ *  + 【写法 3】：BFS
+ *      + 分析：
+ *          + 时间复杂度：O(n)
+ *          + 空间复杂度：O(1)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：18.67 MB, 击败 55.57%
  */
 
 // #include "Leetcode/Tree/Tree.h"
@@ -55,6 +66,39 @@ using std::max;
  *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
+
+// 【写法 3】：BFS -- 2026.1.1
+class Solution {
+private:
+    static constexpr int MAXSIZE = 10001;
+    static TreeNode* arr[MAXSIZE];
+    
+public:
+    int maxDepth(TreeNode* root) {
+        
+        if (!root) return 0;
+
+        int front{0}, rear{0};
+        arr[rear++] = root;
+        int ret = 0;
+
+        while (front < rear) {
+
+            int last_rear = rear;
+            ++ret;
+            while (front < last_rear) {
+
+                TreeNode* cur = arr[front++];
+                if (cur->left) arr[rear++] = cur->left;
+                if (cur->right) arr[rear++] = cur->right;
+            }
+        }
+
+        return ret;
+    }
+};
+
+TreeNode* Solution::arr[MAXSIZE]{};
 
 // 写法2：递归返回时，比较左右子树高度；向上得到最大深度
 class Solution {

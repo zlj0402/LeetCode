@@ -21,6 +21,14 @@
      + rank:
          + 时间效率：0 ms, 击败 100%
          + 空间效率：18.77 MB, 击败 44.69%
+
+ +  【写法 3】：BFS
+     + 分析：
+         + 时间复杂度：O(n)
+         + 空间复杂度：O(1)
+     + rank:
+         + 时间效率：0 ms, 击败 100%
+         + 空间效率：18.04 MB, 击败 95.02%
 """
 
 import os
@@ -43,7 +51,29 @@ from Include.PyLeetcode.Tree.Tree import TreeNode
 #         self.right = right
 
 class Solution:
+    MAXSIZE = 10001
+    arr = [None] * MAXSIZE
 
+    def __init__(self):
+        self.arr = Solution.arr
+
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        if not root: return 0
+        ret = front = rear = 0
+        
+        self.arr[rear] = root; rear += 1
+        while front < rear:
+            ret += 1
+            last_rear = rear
+            while front < last_rear:
+                cur = self.arr[front]; front += 1
+                if cur.left: self.arr[rear] = cur.left; rear += 1
+                if cur.right: self.arr[rear] = cur.right; rear += 1
+        return ret
+
+class Solution:
+
+    # 这个写法真优雅
     def maxDepth(self, root: Optional[TreeNode]) -> int:
         if root is None:
             return 0
