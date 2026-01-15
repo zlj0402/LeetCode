@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 14/1/2026
  * 
+ * @updated: 
+ *  + 15/1/2026: add 【思路 1 -- 写法 2】：回溯 -- 子集型问题 -- 每次必须枚举一个数，但集合不能重复，按顺序进行
+ * 
  * @Difficulty: Medium
  * 
  * @Label: BackTracking
@@ -11,7 +14,7 @@
  * @Retrospect(worthy 1 - 5): 5 【枚举选与不选的思想很优雅】
  * 
  * @thoughts:
- *  + 【思路 1】：回溯 -- 子集型问题
+ *  + 【思路 1 -- 写法 1】：回溯 -- 子集型问题 -- 当前位置数字，选与不选的抉择
  *      子集型问题，就是解决完当前问题，子问题是同样的做法；（也即递归性）
  * 
  *      + 分析：
@@ -20,10 +23,22 @@
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
  *          + 空间效率：12.98 MB, 击败 5.03%  
+ * 
+ *  + 【思路 1 -- 写法 2】：回溯 -- 子集型问题 -- 每次必须枚举一个数，但集合不能重复，按顺序进行
+ *      + 分析：同 写法 1
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：9.63 MB, 击败 94.68%
+ *      + ps:
+ *          Q1: 想一想两种写法在空间上的效率为什么不一样？
  */
 #include <vector>
+#include <iostream>
+using std::cout;
+using std::endl;
 using std::vector;
 
+/*
 class Solution {
 public:
     vector<vector<int>> subsets(vector<int>& nums) {
@@ -50,3 +65,45 @@ public:
         return ret;
     }
 };
+*/
+
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        
+        vector<int> path;
+        vector<vector<int>> ans;
+
+        int n = nums.size();
+
+        auto dfs = [&](this auto&& dfs, int i) -> void {
+
+            ans.emplace_back(path);
+
+            if (i == n) return;
+
+            for (int j = i; j < n; ++j) {
+
+                path.push_back(nums[j]);
+                dfs(j + 1);
+                path.pop_back();
+            }
+        };
+
+        dfs(0);
+
+        return ans;
+    }
+};
+
+int main() {
+
+    vector<int> nums = {1, 2, 3};
+    auto res = Solution().subsets(nums);
+
+    for (auto arr : res) {
+        for (auto e : arr)
+            cout << e << " ";
+        cout << endl;
+    }
+}
