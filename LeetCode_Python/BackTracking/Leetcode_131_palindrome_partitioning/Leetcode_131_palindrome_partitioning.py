@@ -4,6 +4,9 @@
 @author: liangj.zhang
 @date: 18/1/2026
 
+@updated: 
+    + 20/1/2026: add  【思路 2】：回溯，逗号选或不选
+
 @Difficulty: Medium
 
 @Label: BackTracking
@@ -25,23 +28,74 @@
      + rank:
          + 时间效率：43 ms, 击败 89.97%
          + 空间效率：32.92 MB, 击败 78.98%
+
+ +  【思路 2】：回溯，逗号选或不选
+     如果选了，就从上一次结束的位置，到当前位置 -> [start, i + 1)
+     --
+     很烧脑，只能看着代码模版来理解
+    
+     + 分析：
+        + 时间复杂度：O(n*2^n)
+        + 空间复杂度：不带结果：O(n) 栈递归 + O(n) path 占用 -> O(n)
+                    带结果 O(n*2^n)
+     + rank:
+        + 时间效率：39 ms, 击败 96.7%
+        + 空间效率：32.67 MB, 击败 82.25%
 """
 
+"""
 class Solution:
     def partition(self, s: str) -> List[List[str]]:
         ans = []
         path = []
         n = s.__len__()
 
+        # 考虑 [i:] 怎么分割
         def dfs(i: int) -> None:
-            if i == n:
+            if i == n:  # 分割完毕
                 ans.append(path.copy())
                 return 
-            for j in range(i, n):
-                t = s[i:j + 1]
-                if t == t[::-1]:
+            for j in range(i, n):   # 枚举子串结束的位置
+                t = s[i:j + 1]      # 分割出子串
+                if t == t[::-1]:    # 判断子串是否回文
                     path.append(t)
-                    dfs(j + 1)
+                    dfs(j + 1)  # 考虑子串 [j+1:] 怎么分割
                     path.pop()
         dfs(0)
         return ans
+"""
+
+from typing import List
+
+
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        n = s.__len__()
+        ans = []
+        path = []
+
+        def dfs(i: int, start: int) -> None:
+            if i == n:
+                ans.append(path.copy())
+                return  # 原来错误的写法：忘记这里 return 了，如果缺少，会造成空串一直是回文， dfs(i+1, i+1) 那里一直执行下去
+            
+            if i < n - 1:
+                dfs(i + 1, start)
+
+            t = s[start: i + 1]
+            if t == t[::-1]:
+                path.append(t)
+                dfs(i + 1, i + 1)
+                path.pop()
+
+        dfs(0, 0)
+
+        return ans
+    
+def main():
+    s = "aab"
+    Solution().partition(s)
+    
+
+if __name__ == "__main__":
+    main()
