@@ -11,7 +11,7 @@
  * @Retrospect(worthy 1 - 5): 3
  * 
  * @thoughts:
- *  + 【思路 1 -- 写法 1】：选与不选，这里就是选择反不反转
+ *  + 【思路 1】：dfs: 选与不选，这里就是选择反不反转
  *      不是字母的不动；
  * 
  *      + 分析：
@@ -21,15 +21,76 @@
  *          + 时间效率：0 ms，击败 100%
  *          + 空间效率：12.66 MB, 击败 88.6%
  * 
- *  + 【思路 1 -- 写法 2】：枚举反不反转，留 2026.1.27 明天写
+ *  + 【思路 2】：bfs
+ *      举例：a1b2
+ *              ""
+ *            /   \
+ *           a     A
+ *           |     |
+ *          a1     A1
+ *         /  \   /  \
+ *       a1b a1B A1b A1B
+ *       |    |   |    |
+ *    a1b2 a1B2 A1b2 A1B2
+ * 
+ *      之所以称这种做法为 BFS，因为队列中始终存在的，是当前层所具有的元素；（当一层结束时，剩余元素是下一层的所有元素）
+ *      ---
+ *      这种BFS有点奇妙；
+ * 
+ *      + 分析：
+ *          + 时间复杂度：O(n * 2^n), n 是字符串的长度
+ *          + 空间复杂度：O(n * 2^n)，队列中元素个数最多为 2^n
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：14.27 MB, 击败 43.62%
+ * 
  */
 
 #include <vector>
 #include <string>
+#include <iostream>
 #include <algorithm>
+#include <queue>
 using std::vector;
 using std::string;
+using std::cout;
+using std::endl;
+using std::queue;
 
+// 【思路 2】：bfs
+class Solution {
+public:
+    vector<string> letterCasePermutation(string s) {
+        
+        vector<string> ret;
+        queue<string> qu;
+
+        qu.emplace("");
+        while(!qu.empty()) {
+
+            string& cur = qu.front();
+            if (cur.size() == s.size()) {
+                ret.push_back(cur);
+                qu.pop();
+            }
+            else {
+                int pos = cur.size();
+                if (isalpha(s[pos])) {
+
+                    string next = cur;
+                    next.push_back(s[pos] ^ 32);
+                    qu.emplace(next);
+                }
+                cur.push_back(s[pos]);
+            }
+        }
+
+        return ret;
+    }
+};
+
+// 【思路 1】：dfs: 选与不选，这里就是选择反不反转
+/*
 class Solution {
 private:
     static constexpr int step = 'a' - 'A';
@@ -91,9 +152,14 @@ public:
         return ret;
     }
 };
+*/
 
 int main() {
 
-    string s = "FjkZh";
-    Solution().letterCasePermutation(s);
+    string s = "a1b2";
+    vector<string> ret = Solution().letterCasePermutation(s);
+
+    for (auto s : ret)
+        cout << s << " ";
+    cout << endl;
 }
