@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 26/1/2026
  * 
+ * @updated:
+ *  + 31/1/2026: 【思路 2】：bfs
+ * 
  * @Difficulty: Medium
  * 
  * @Label: BackTracking & string
@@ -43,7 +46,6 @@
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
  *          + 空间效率：14.27 MB, 击败 43.62%
- * 
  */
 
 #include <vector>
