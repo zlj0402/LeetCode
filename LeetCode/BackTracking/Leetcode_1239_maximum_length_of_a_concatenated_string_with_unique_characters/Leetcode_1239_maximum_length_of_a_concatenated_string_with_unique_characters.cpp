@@ -1,3 +1,59 @@
+/**
+ * @brief: Leetcode_1239_串联字符串的最大长度
+ * @link: https://leetcode.cn/problems/maximum-length-of-a-concatenated-string-with-unique-characters/description/
+ * @author: liangj.zhang
+ * @date: 6/2/2026
+ * 
+ * @updated: 
+ *  + 9/2/2026： add【思路 1 -- 写法 2】
+ * 
+ * @Difficulty: Medium
+ * 
+ * @Label: Backtracking
+ * 
+ * @Retrospect(worthy 1 - 5): 5
+ * 
+ * @thoughts:
+ *  + 【思路 1 -- 写法 1】：backTracking -- 仅结果使用 integer 代替字符串字符个数的方式
+ *      这是自己想到的写法：
+ *          回溯需要的全局的变量，我是通过一个 interger 类型来完成的，仅需要 26 位 bit，我就能表示字符串；
+ *          第一位对应 'a'，第一位是 1 -> 表示的字符串含有 'a' 字符；第一位是 0 -> 表示的字符串没有 'a'
+ *          第二位对应 'b'，含义同上
+ *          ...
+ *          第26位对应 'z'，含义同上
+ *          ---
+ *          这里的转换的做法，同以前在 Samsung 考算法答字符串的题类似，
+ *          不过这里不在乎顺序，只要表示有没有就可以了；
+ *          以前是将字符串按顺序转换为整型，每个字符需要 5 位来表示，偏移 5 位来存储下一位；
+ *          ---
+ *      不过我没有想到，将题目中每个符合可能得字符串都保留，并转换下来，
+ *          1.这样在回溯的时候，只要 | 或操作一下就可以了，如果被 | 的字符串每个字符都在全局的变量中没有存在，
+ *          | 之后，字符串的每个 1 位都会加到全局变量中，结果跟想加的结果一样，
+ *          ---
+ *          如果，有重复的 1，或操作之后，这个位的值，相当于没有算上， | 之后的值，就会比相加的值小；
+ *          这样就能比较出：构成的新字符串结构会不会有重复的字符；
+ *          ---
+ *          这样做，少了一次遍历字符串的时间，
+ *          回溯的次数都是相近的，但每一次可能都可以少去遍历的时间；
+ *          ---
+ *          2.回溯次数的优化：将单个字符串，就存在重复字符的字符串剔除，在剩余的结果中进行回溯；
+ * 
+ *      + 分析：
+ *          + 时间复杂度：O(2^n * m), m 最大是整个数组拼成的字符串的整个长度；真如果是整个字符串是最长，其他可能也不会直接跳过，平均下来，每个结果的字符串整长度大概是 m/2；
+ *          + 空间复杂度：O(n), n -> 递归站的消耗
+ *      + rank:
+ *          + 时间效率：51 ms, 击败 42.11%
+ *          + 空间效率：11.46 MB, 击败 53.39%
+ * 
+ * + 【思路 1 -- 写法 2】：回溯，不仅全局结果使用 integer 代替，每个字符串也使用 integer 代替，并在此之前就剔除自身不符合的字符串；
+ *          理解，见写法 1 的第二段；
+ *      + 分析：
+ *          + 时间复杂度：O(2^n)
+ *          + 空间复杂度：O(n)
+ *      + rank:
+ *          + 时间效率：0 ms，击败 100%
+ *          + 空间效率：10.33 MB, 击败 84.59%
+ */
 #include <vector>
 #include <string>
 #include <iostream>
@@ -7,6 +63,7 @@ using std::endl;
 using std::vector;
 using std::string;
 
+// 【思路 1 -- 写法 1】：backTracking -- 仅结果使用 integer 代替字符串字符个数的方式
 class Solution {
 private:
     bool isValid(unsigned int& mask, string& s, string& res) {
@@ -66,61 +123,68 @@ public:
     }
 };
 
+// 【思路 1 -- 写法 2】：回溯，不仅全局结果使用 integer 代替，每个字符串也使用 integer 代替，并在此之前就剔除自身不符合的字符串；
+class Solution {
+private:
+    static vector<int> rec;
+    unsigned int maxSize = 0;
+
+    void dfs(int idx, int res) {
+
+        if (idx == rec.size()) {
+            if (size_t size = __builtin_popcount(res); size > maxSize) {
+                maxSize = size;
+            }
+            return;
+        }
+
+        for (size_t j = idx; j < rec.size(); ++j) {
+
+            bool valid = false;
+            if ((rec[j] | res) == rec[j] + res) 
+                valid = true;
+            dfs(j + 1, valid ? res | rec[j] : res);
+            // if (valid) res ^= rec[j];
+        }
+    }
+
+public:
+
+    Solution() : maxSize(0) {}
+
+    int maxLength(vector<string>& arr) {
+        
+        rec.clear();
+        for (auto& s : arr) {
+
+            int tmp = 0;
+            bool valid = true;
+            for (char c : s) {
+                
+                if (tmp & (1u << (c - 'a'))) {
+
+                    valid = false;
+                    break;
+                }
+                tmp |= 1u << (c - 'a'); 
+            }
+
+            // 1. 先排除自身就会有重复字符的字符串
+            // 2. 转换字符串成一个 integer，26 位对应表示字符
+            if (valid) rec.push_back(std::move(tmp));
+        }
+
+        dfs(0, 0);
+
+        return maxSize;
+    }
+};
+
+vector<int> Solution::rec;
+
+
 int main () {
 
     vector<string> arr = {"un","iq","ue"};
     Solution().maxLength(arr);
 }
-
-inline int countOnes(int num) {
-    int cnt = 0;
-    for (int i = 0; i < 26; ++i) cnt += ((num >> i) & 1);
-    return cnt;
-}
-
-// inline bool check(int a, int b) {
-//     if (a == 0 || b == 0) return 1;
-//     for (int i = 0; i < 26; ++i) {
-//         if (((a >> i) & 1) == 1 && ((b >> i) & 1) == 1) return 0;
-//     }
-//     return 1;
-// }
-
-int maxLen;
-vector<int> mp;
-
-void traceBack(int idx, int cur) {
-    if (idx >= mp.size()) {
-        maxLen = max(maxLen, countOnes(cur));
-        return;
-    }
-    if ((cur & mp[idx])==0) {
-        traceBack(idx + 1, cur | mp[idx]);
-    }
-    traceBack(idx + 1, cur);
-}
-class Solution {
-public:
-    int maxLength(vector<string>& arr) {
-        mp.clear(); maxLen = 0;
-        for (auto& s : arr) {
-            if (s.size() > 26) continue;
-            int tem = 0;
-            bool valid = 1;
-            for (char c : s) {
-                if ((tem >> (c - 'a')) & 1) {
-                    valid = 0; break;
-                }
-                tem |= (1 << (c - 'a'));
-            }
-            if (valid) mp.push_back(tem);
-        }
-
-        if (mp.empty()) return 0;
-        if (mp.size() == 1) return countOnes(mp[0]);
-
-        traceBack(0, 0);
-
-        return maxLen;
-    }
-};
