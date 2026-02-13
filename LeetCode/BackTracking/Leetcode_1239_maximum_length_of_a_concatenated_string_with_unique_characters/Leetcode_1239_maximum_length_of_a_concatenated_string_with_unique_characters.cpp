@@ -6,6 +6,7 @@
  * 
  * @updated: 
  *  + 9/2/2026： add【思路 1 -- 写法 2】
+ *  + 13/2/2026: add【思路 1 -- 写法 3】：回溯，剪枝
  * 
  * @Difficulty: Medium
  * 
@@ -53,6 +54,22 @@
  *      + rank:
  *          + 时间效率：0 ms，击败 100%
  *          + 空间效率：10.33 MB, 击败 84.59%
+ * 
+ * + 【思路 1 -- 写法 3】：回溯，剪枝
+ *      + 当遇到组合在一起之后，不符合题目要求时，我们就切断，从该节点往下所有 dfs 的可能；
+ *          + 通过遍历来得到下一个字符串；
+ *          + 如果继续 dfs 得到下一个，和上面遍历到下一个，是重复的；
+ *      + 要实现，随遇不合即停，我们得需要每次在进入 dfs 时都进行比较，
+ *          + 一是因为，此时进来的，都是已经合法的情况；
+ *          + 二是此时如果还留到 idx == size - 1 时，再去判断，有的情况，不是有的情况，是几乎95%的情况，都会因为半路终止，无法进行判断；
+ *      
+ *      时间效率每次必定是 0 ms，写法 2 每次还不一定必定是；
+ *      + 分析：
+ *          + 时间复杂度：O(2^n)，但肯定比这小，因为剪枝了
+ *          + 空间复杂度：O(n)，只有最坏的情况才是 O(n)，
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：10.26 MB, 击败 89.86%
  */
 #include <vector>
 #include <string>
@@ -182,6 +199,62 @@ public:
 
 vector<int> Solution::rec;
 
+// 【思路 1 -- 写法 3】：回溯，剪枝
+class Solution {
+private:
+    static vector<int> rec;
+    unsigned int maxSize = 0;
+
+    void dfs(int idx, int res) {
+
+        if (size_t size = __builtin_popcount(res); size > maxSize) {
+            maxSize = size;
+        }
+
+        for (size_t j = idx; j < rec.size(); ++j) {
+
+            bool valid = false;
+            if ((rec[j] | res) == rec[j] + res) {
+
+                valid = true;
+                dfs(j + 1, valid ? res | rec[j] : res);
+            }
+        }
+    }
+
+public:
+
+    Solution() : maxSize(0) {}
+
+    int maxLength(vector<string>& arr) {
+        
+        rec.clear();
+        for (auto& s : arr) {
+
+            int tmp = 0;
+            bool valid = true;
+            for (char c : s) {
+                
+                if (tmp & (1u << (c - 'a'))) {
+
+                    valid = false;
+                    break;
+                }
+                tmp |= 1u << (c - 'a'); 
+            }
+
+            // 1. 先排除自身就会有重复字符的字符串
+            // 2. 转换字符串成一个 integer，26 位对应表示字符
+            if (valid) rec.push_back(std::move(tmp));
+        }
+
+        dfs(0, 0);
+
+        return maxSize;
+    }
+};
+
+vector<int> Solution::rec;
 
 int main () {
 
