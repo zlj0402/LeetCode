@@ -7,6 +7,7 @@
  * @updated: 
  *  + 9/2/2026： add【思路 1 -- 写法 2】
  *  + 13/2/2026: add【思路 1 -- 写法 3】：回溯，剪枝
+ *  + 14/2/2026: add【思路 1 -- 写法 4】：回溯，选或不选（上面 3 中都是枚举）
  * 
  * @Difficulty: Medium
  * 
@@ -70,6 +71,15 @@
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
  *          + 空间效率：10.26 MB, 击败 89.86%
+ * 
+ * + 【思路 1 -- 写法 4】：回溯，选或不选（上面 3 中都是枚举）
+ *      选或不选，也是在一次筛选转变之后；在剩下初步合法中进行组合；
+ *      + 分析：
+ *          + 时间复杂度：O(2^n)
+ *          + 空间复杂度：O(n)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：10.14 MB, 击败 98.56%
  */
 #include <vector>
 #include <string>
@@ -81,6 +91,7 @@ using std::vector;
 using std::string;
 
 // 【思路 1 -- 写法 1】：backTracking -- 仅结果使用 integer 代替字符串字符个数的方式
+/*
 class Solution {
 private:
     bool isValid(unsigned int& mask, string& s, string& res) {
@@ -139,8 +150,10 @@ public:
         return maxLen;
     }
 };
+*/
 
 // 【思路 1 -- 写法 2】：回溯，不仅全局结果使用 integer 代替，每个字符串也使用 integer 代替，并在此之前就剔除自身不符合的字符串；
+/*
 class Solution {
 private:
     static vector<int> rec;
@@ -198,8 +211,10 @@ public:
 };
 
 vector<int> Solution::rec;
+*/
 
 // 【思路 1 -- 写法 3】：回溯，剪枝
+/*
 class Solution {
 private:
     static vector<int> rec;
@@ -212,13 +227,68 @@ private:
         }
 
         for (size_t j = idx; j < rec.size(); ++j) {
-
-            bool valid = false;
-            if ((rec[j] | res) == rec[j] + res) {
-
-                valid = true;
+            
+            if (bool valid = (rec[j] | res) == rec[j] + res; valid) {
                 dfs(j + 1, valid ? res | rec[j] : res);
             }
+        }
+    }
+
+public:
+
+    Solution() : maxSize(0) {}
+
+    int maxLength(vector<string>& arr) {
+        
+        rec.clear();
+        for (auto& s : arr) {
+
+            int tmp = 0;
+            bool valid = true;
+            for (char c : s) {
+                
+                if (tmp & (1u << (c - 'a'))) {
+
+                    valid = false;
+                    break;
+                }
+                tmp |= 1u << (c - 'a'); 
+            }
+
+            // 1. 先排除自身就会有重复字符的字符串
+            // 2. 转换字符串成一个 integer，26 位对应表示字符
+            if (valid) rec.push_back(std::move(tmp));
+        }
+
+        dfs(0, 0);
+
+        return maxSize;
+    }
+};
+
+vector<int> Solution::rec;
+*/
+
+// 
+class Solution {
+private:
+    static vector<int> rec;
+    unsigned int maxSize = 0;
+
+    void dfs(int idx, int res) {
+
+        if (size_t size = __builtin_popcount(res); size > maxSize) {
+            maxSize = size;
+        }
+
+        if (idx == rec.size()) return;
+
+        // 不选
+        dfs(idx + 1, res);
+
+        // 选，但也得看看是否满足题目要求
+        if (bool valid = (rec[idx] | res) == rec[idx] + res; valid) {
+            dfs(idx + 1, valid ? res | rec[idx] : res);
         }
     }
 
