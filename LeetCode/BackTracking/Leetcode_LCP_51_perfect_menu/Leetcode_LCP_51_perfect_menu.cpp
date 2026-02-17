@@ -6,6 +6,7 @@
  * 
  * @updated: 
  *  + 15/2/2026: add【思路 1】：回溯，枚举 DFS
+ *  + 17/2/2026: add【思路 1 -- 写法 2】：回溯，选与不选 DFS
  * 
  * @Difficulty: Easy
  * 
@@ -34,6 +35,13 @@
  *      + rank:
  *          + 时间效率：15 ms, 击败 17.25%
  *          + 空间效率：24.02 MB, 击败 34.51%
+ * 
+ * + 【思路 1 -- 写法 2】：回溯，选与不选 DFS
+ *      理解起来比枚举的要好理解一点
+ *      + 分析：同 【思路 1】
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：22.82 MB, 击败 80.36%
  */
 
 #include <vector>
@@ -131,6 +139,55 @@ public:
             }
 
         }
+
+        return maxDelicious;
+    }
+};
+
+// 【思路 1 -- 写法 2】：回溯，选与不选
+class Solution {
+private:
+    bool possible(vector<int>& mat, vector<int>& cookbook) {
+
+        for (int i = 0; i < mat.size(); ++i) {
+
+            if (mat[i] - cookbook[i] < 0)
+                return false;
+        }
+        return true;
+    }
+public:
+    int perfectMenu(vector<int>& materials, vector<vector<int>>& cookbooks, vector<vector<int>>& attribute, int limit) {
+
+        int n = cookbooks.size();
+        int maxDelicious = -1;
+
+        auto dfs = [&](this auto&& dfs, int i, int delicious, int full) -> void {
+
+            if (i == n) {
+                
+                if (full >= limit && delicious > maxDelicious) {
+                    maxDelicious = delicious;
+                }
+                return;
+            }
+
+            dfs(i + 1, delicious, full);
+
+            if (possible(materials, cookbooks[i])) {
+
+                for (int k = 0; k < materials.size(); ++k)
+                    materials[k] -= cookbooks[i][k];
+                
+                dfs(i + 1, delicious + attribute[i][0], full + attribute[i][1]);
+                
+                // backtracking
+                for (int k = 0; k < materials.size(); ++k)
+                    materials[k] += cookbooks[i][k];
+            }
+        };
+
+        dfs(0, 0, 0);
 
         return maxDelicious;
     }
