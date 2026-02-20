@@ -269,7 +269,7 @@ public:
 vector<int> Solution::rec;
 */
 
-// 
+//【思路 1 -- 写法 4】：回溯，选或不选（上面 3 中都是枚举）
 class Solution {
 private:
     static vector<int> rec;
