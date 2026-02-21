@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 20/2/2026
  * 
+ * @updated:
+ *  + 21/2/2026:【思路 1 -- 写法 3】：回溯，得分与不得分
+ * 
  * @Difficulty: Medium
  * 
  * @Label: BackTracking
@@ -28,6 +31,13 @@
  *      + rank: 
  *          + 时间效率：3 ms, 击败 92.17 %
  *          + 空间效率：12.34 MB, 击败 83.74%
+ * 
+ *  + 【思路 1 -- 写法 3】：回溯，得分与不得分
+ *      同上
+ *      + 分析：同上
+ *      + rank: 
+ *          + 时间效率：11 ms, 击败 66.07%
+ *          + 空间效率：12.41 MB, 击败 67.26%
  */
 
 #include <vector>
@@ -43,8 +53,8 @@ public:
         vector<int> path(aliceArrows.size(), 0);
         vector<int> ans;
 
-        auto dfs = [&](this auto &&dfs, int idx, int score, int leftArrows) -> void
-        {
+        auto dfs = [&](this auto &&dfs, int idx, int score, int leftArrows) -> void {
+
             if (maxScore < score) {
 
                 ans = path;
@@ -115,3 +125,42 @@ public:
 
 vector<int> Solution::path;
 vector<int> Solution::ans;
+
+// 【思路 1 -- 写法 3】：回溯，得分与不得分
+class Solution {
+public:
+    vector<int> maximumBobPoints(int numArrows, vector<int>& aliceArrows) {
+        
+        vector<int> path(aliceArrows.size(), 0);
+        vector<int> ans;
+        int maxScore = 0;
+
+        auto dfs = [&](this auto&& dfs, int idx, int leftArrows, int score) -> void {
+
+            if (idx == aliceArrows.size()) {
+
+                if (maxScore < score) {
+
+                    maxScore = score;
+                    ans = path;
+                    if (leftArrows > 0) ans[0] += leftArrows;
+                }
+                return;
+            }
+
+            // 不选
+            dfs(idx + 1, leftArrows, score);
+            // 可选
+            if (int curNeed = aliceArrows[idx] + 1; leftArrows - curNeed >= 0) {
+
+                path[idx] = curNeed;
+                dfs(idx + 1, leftArrows - curNeed, score + idx);
+                path[idx] = 0;
+            }
+        };
+
+        dfs(0, numArrows, 0);
+
+        return ans;
+    }
+};

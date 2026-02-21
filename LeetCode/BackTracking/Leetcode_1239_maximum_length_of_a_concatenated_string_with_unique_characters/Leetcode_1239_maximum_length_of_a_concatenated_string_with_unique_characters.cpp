@@ -228,6 +228,7 @@ private:
 
         for (size_t j = idx; j < rec.size(); ++j) {
             
+            // 没能满足条件时，就相当于在此处 for 循环当中，跳过当前，选到了下一个，而非通过 dfs 选到下一个
             if (bool valid = (rec[j] | res) == rec[j] + res; valid) {
                 dfs(j + 1, valid ? res | rec[j] : res);
             }
