@@ -20,8 +20,8 @@
             + 时间复杂度：O(C(n, k) * k)
             + 空间复杂度：O(k)
         + rank:
-            + 时间效率：119 ms, 击败 58.70%
-            + 空间效率：60.03 MB, 击败 43.57%
+            + 时间效率：115 ms, 击败 64.25%
+            + 空间效率：60.08 MB, 击败 35.00%
 """
 
 from typing import List
@@ -37,6 +37,7 @@ class Solution:
                 ans.append(path.copy())
                 return
             for j in range(idx, n + 1):
+                if len(path) + n - idx + 1 < k: return
                 path.append(j)
                 dfs(j + 1)
                 path.pop()
