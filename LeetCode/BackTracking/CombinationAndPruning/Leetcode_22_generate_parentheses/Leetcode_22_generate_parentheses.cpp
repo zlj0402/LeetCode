@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 1/3/2026
  * 
+ * @updated:
+ *  + 4/3/2026: add 【思路 1 -- 写法 2】：回溯（选与不选）+ 剪枝 + dfs
+ * 
  * @Difficulty: Medium
  * 
  * @Label: Backtracking & pruning & dfs
@@ -11,7 +14,7 @@
  * @Retrospect(worthy 1 - 5): 4
  * 
  * @thoughts:
- *  + 【思路 1 -- 写法 1】：回溯
+ *  + 【思路 1 -- 写法 1】：回溯（枚举）
  *      我的思路是，什么时候是不合法的匹配？
  *          在某个位置 idx 上时，[0, idx] 范围内，如果右括号数 > 左括号数时，一定是不合法的，后面位置再怎么搭配，也不可能使得最后结果合法；
  *                                              如果右括号数 <= 左括号数，后面才有可能合法；
@@ -34,7 +37,14 @@
  *              + summary：O(Cn * 2 * n) = O(Cn * n) = O(4^n / n^(1/2))
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
- *          + 空间效率：10.13 MB, 击败 90.82%          
+ *          + 空间效率：10.13 MB, 击败 90.82%  
+ * 
+ * + 【思路 1 -- 写法 2】：回溯（选与不选）
+ *      只要记住，如果出现右括号数比左括号多的时候，就不该递归下去了；
+ *      + 分析：完全剪枝同上
+ *      + rank: 
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：10.02 MB, 击败 91.46%
  */
 
 #include <vector>
@@ -43,6 +53,7 @@
 using std::vector;
 using std::string;
 
+// 【思路 1 -- 写法 1】：回溯（枚举）
 class Solution {
 public:
     vector<string> generateParenthesis(int n) {
@@ -69,6 +80,36 @@ public:
 
         dfs(0, 0, 0);
 
+        return ans;
+    }
+};
+
+// 【思路 1 -- 写法 2】：回溯（选与不选）
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+
+        vector<char> path(2 * n, ')');
+        vector<string> ans;
+        
+        [&](this auto&& dfs, int idx, int left, int right) -> void {
+            
+            if (right > left) return;
+            
+            if (left == n) {
+                ans.push_back(string(path.begin(), path.end()));
+                return;
+            }
+            
+            // 选
+            path[idx] = '(';
+            dfs(idx + 1, left + 1, right);
+            path[idx] = ')';
+            
+            // 不选
+            dfs(idx + 1, left, right + 1);
+        } (0, 0, 0);
+        
         return ans;
     }
 };
