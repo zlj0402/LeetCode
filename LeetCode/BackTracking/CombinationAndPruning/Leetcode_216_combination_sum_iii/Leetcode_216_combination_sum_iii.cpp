@@ -1,8 +1,11 @@
 /**
  * @brief: Leetcode_216_组合总和_III
- * @link: 组合总和 III
+ * @link: https://leetcode.cn/problems/combination-sum-iii/
  * @author: liangj.zhang
  * @date: 26/2/2026
+ * 
+ * @updated: 
+ *  + 7/3/2026: add 【思路 2】：选与不选回溯 + 剪枝
  * 
  * @Difficulty: Medium
  * 
@@ -11,7 +14,7 @@
  * @Retrospect(worthy 1 - 5): 3
  * 
  * @thoughts:
- *  + 【思路 1】：回溯 + 剪枝
+ *  + 【思路 1】：枚举回溯 + 剪枝
  *      正常的回溯已经没问题了吧
  *      剪枝1：正常能有结果的条是，前 k 个数之和是 <= n 的，且 后 k 个数之和是 >= n 的
  *              即 1 + ... + k <= n <= [(9 - (k - 1)] + ... + {9 - [k - (k - 1)]} + [9 - (k - k)]
@@ -26,7 +29,21 @@
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
  *          + 空间效率：8.49 MB, 击败 95.41%
- */
+ * 
+ *  + 【思路 2】：选与不选回溯 + 剪枝
+ *      上面能够想到 回溯之前最开始前 k 个数之和 > n，后 k 个数之和时 < n 时是边界条件，已经很接近最完美剪枝了；
+ *      把这个想法融进循环当中，就是最完美的剪枝；
+ *      已经选择的 sum 和 + 剩余的范围内的 剩余k 的前k个数之和 = sum + (idx + 0) + (idx + 1) + ... (idx + k - 2) + (idx + k - 1)
+ *                                                         = sum + k * idx + k * (k - 1) / 2
+ *      已经选择的 sum 和 + 剩余的范围内的 剩余k 的后k个数之和 = sum + 9 + ... + (9 - (k - 2)) + (9 - (k - 1))
+ *                                                         = sum + 9 * k - k * (k - 1) / 2 < n
+ *      + 分析：
+ *          + 时间复杂度：【思路 1】的分析是按完全剪枝分析的，但代码现在发现不是完美剪枝；参考【思路 1】的分析
+ *          + 空间复杂度：O(k)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：8.99 MB, 击败 8.29%
+ */ 
 
 #include <vector>
 using std::vector;
@@ -90,6 +107,43 @@ public:
         };
 
         if ((k + 1) * k > 2 * n || (19 * k - k * k) < 2 * n) return {}; // 剪枝 1：边界条件都无法满足
+        dfs(1, k, 0);
+
+        return ans;
+    }
+};
+
+// 【思路 2】：选与不选回溯 + 剪枝
+class Solution {
+public:
+    vector<vector<int>> combinationSum3(int k, int n) {
+
+        vector<int> path;
+        vector<vector<int>> ans;
+        
+        auto dfs = [&](this auto&& dfs, int idx, int k, int sum) -> void {
+
+            if (k == 0) {
+                if (sum == n) ans.push_back(path);
+                return;
+            }
+            
+            // 数量剪枝：剩余位数不够 剩余k 时，就直接 return
+            if (9 - idx + 1 < k) return;
+            // 和剪枝：
+            // 1. 已选择的项和 sum + 剩余最小 k 个数和(剩余数的剩余前k个) > n，都比目标 n 大的话，后面就不用遍历了；
+            // 2. 已选择的项和 sum + 剩余最大 k 个数和(剩余数的倒数后k个) < n, 都比目标 n 小的话，后面就不用遍历了；
+            if (sum + k * idx + (k - 1) * k / 2 > n || sum + 9 * k - (k * k - k) / 2 < n) return;
+
+            // 选
+            path.push_back(idx);
+            dfs(idx + 1, k - 1, sum + idx);
+            path.pop_back();
+
+            // 不选
+            dfs(idx + 1, k, sum);
+        };
+
         dfs(1, k, 0);
 
         return ans;
