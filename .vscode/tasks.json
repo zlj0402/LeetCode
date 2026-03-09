@@ -3,17 +3,16 @@
         {
             "type": "cppbuild",
             "label": "C/C++: g++.exe build active file",
-            "command": "E:/zlj/Programs/msys64/ucrt64/bin/g++.exe",
+            "command": "D:/Tools/MSYS2/ucrt64/bin/g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "-std=gnu++23", 
                 "${file}",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
-                "cwd": "E:/zlj/Programs/msys64/ucrt64/bin"
+                "cwd": "D:/Tools/MSYS2/ucrt64/bin"
             },
             "problemMatcher": [
                 "$gcc"

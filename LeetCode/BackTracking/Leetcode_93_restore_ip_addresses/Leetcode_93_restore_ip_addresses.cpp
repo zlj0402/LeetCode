@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 24/2/2026
  * 
+ * @updated:
+ *  + 9/3/2026: add【思路 1 -- 写法2】：选与不选，子集型回溯
+ * 
  * @Difficulty: Medium
  * 
  * @Label: Backtracking
@@ -29,6 +32,15 @@
  *      + rank:
  *          + 时间效率：0 ms, 击败 100%
  *          + 空间效率：10.29 MB, 击败 50.9%
+ * 
+ * + 【思路 1 -- 写法2】：选与不选，子集型回溯
+ *      思路和上面一样，但做法稍有不一样，这次是选择记录上一次选择的位置，不是记录已经选择的长度；
+ *      + 分析：
+ *          + 时间复杂度：接近完全剪枝，0 ms，击败 100%
+ *          + 空间复杂度：参考上方，O(n)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：10.63 MB, 击败 36.03%
  */
 
 #include <vector>
@@ -39,6 +51,7 @@ using std::vector;
 using std::string;
 using std::ostringstream;
 
+// 【思路 1】：回溯
 // class Solution {
 // private:
 //     static vector<string> path, ans;
@@ -116,6 +129,7 @@ using std::ostringstream;
 
 // vector<string> Solution::path, Solution::ans;
 
+// 【思路 1 -- 写法2】：选与不选，子集型回溯
 class Solution {
 
 private:
@@ -149,10 +163,29 @@ private:
     }
 
     // dfs: remaining, leftDot
-    void dfs(int idx, int lastSelected, int leftDot) {
+    void dfs(int idx, int lastSelected, int leftDot, string& s) {
 
+        if (leftDot == 0) {
 
-        if (s.size() - idx )
+            if (string sub_s = s.substr(idx); isValid(sub_s)) {
+                path.push_back(std::move(sub_s));
+                ans.push_back(join(path, "."));
+                // std::cout << ans[ans.size() - 1] << std::endl;
+                path.pop_back();
+            }
+            return;
+        }
+
+        if (((s.size() - idx) / (leftDot + 1) > 3) || idx - lastSelected > 3 || s.size() - idx - 1 < leftDot) return;
+
+        if (string sub_s = s.substr(lastSelected + 1, idx - lastSelected); isValid(sub_s)) {
+            path.push_back(std::move(sub_s));
+            dfs(idx + 1, idx, leftDot - 1, s);
+            path.pop_back();
+        }
+        
+        dfs(idx + 1, lastSelected, leftDot, s);
+        
     }
 public:
     vector<string> restoreIpAddresses(string s) {
