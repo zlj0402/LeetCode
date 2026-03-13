@@ -4,6 +4,9 @@
 @author: liangj.zhang
 @date: 11/3/2026
 
+@updated:
+    + 13/2/2026: add 【思路 2】：枚举回溯 -- 排列 -- 标志位
+
 @Difficulty: Medium
 
 @Label: Backtracking & Permutation
@@ -27,6 +30,13 @@
         + rank:
             + 空间效率：3 ms, 击败 42.20%
             + 时间效率：19.33 MB, 击败 37.45%
+
+    + 【思路 2】：枚举回溯 -- 排列 -- 标志位
+        不采用集合的方式，使用标志位的方式
+        + 分析：同上
+        + rank:
+            + 时间效率：0 ms, 击败 100%
+            + 空间效率：19.37 MB, 击败 32.06%
 """
 
 from typing import List
@@ -40,7 +50,7 @@ class Solution:
         
         # 这里的 idx 是决定放入 path[idx]，而不是 nums 中 idx 位置的数
         def dfs(idx: int, s: set) -> None:
-            nonlocal path
+            nonlocal path, ans
             if idx == len(nums):
                 ans.append(path.copy())
                 return
@@ -49,4 +59,26 @@ class Solution:
                 dfs(idx + 1, s - {num})
                 path[idx] = 0
         dfs(0, s)
+        return ans
+
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        path = [0] * len(nums)
+        flags = [False] * len(nums)
+        ans = []
+
+        def dfs(idx: int) -> None:
+            nonlocal path, ans, flags
+            if idx == len(nums):
+                ans.append(path.copy())
+                return
+            for i in range(len(nums)):
+                if not flags[i]:
+                    path[idx] = nums[i]
+                    flags[i] = True
+                    dfs(idx + 1)
+                    flags[i] = False
+                    path[idx] = 0
+        dfs(0)
         return ans
