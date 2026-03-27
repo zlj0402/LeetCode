@@ -2,7 +2,10 @@
  * @brief: Leetcode_79_单词搜索
  * @link: https://leetcode.cn/problems/word-search/description
  * @author: liangj.zhang
- * @date: 27/3/2026
+ * @date: 26/3/2026
+ * 
+ * @updated:
+ *  + 27/3/2026: add 【思路 2】：回溯 + 剪枝
  * 
  * @Difficulty: Medium
  * 
@@ -21,6 +24,17 @@
  *      + rank:
  *          + 时间效率：259 ms, 击败 77.16%
  *          + 空间效率：10.11 MB, 击败 99.85%
+ * 
+ *  + 【思路 2】：回溯 + 剪枝
+ *      参考灵神的题解：https://leetcode.cn/problems/word-search/solutions/2927294/liang-ge-you-hua-rang-dai-ma-ji-bai-jie-g3mmm/?envType=study-plan-v2&envId=top-100-liked
+ *      + 可行性剪枝：统计 board 当中字符的数量，和 word 当中字符的数量；如果 word 当中的某个字符数量 > board 当中字符的数量，那就不可能找到完整的 word；
+ *      + 顺序剪枝：当最前面的字符数多于最后的字符数，以它开始遍历的话，就会有更多的递归的可能性；
+ *          虽然上面说的有理，比如最后一个字符数 < 第一个字符数，但要是倒数第二个字符数又远多于第一个字符，会不会可能导致更多的可能性?
+ *          当然数量更小的开头，可以明显的避免更多递归的可能；真实情况到了考虑第二字符时，也只有四个方向进行考虑，不会有过多的可能紧挨着第一个字符；
+ *      + 分析：同上，剪枝效果，得根据 case 具体情况看，具体能剪掉多少，不可预知
+ *      + rank:
+ *          + 时间效率：3 ms, 击败 96.13%
+ *          + 空间效率：10.44 MB, 击败 75.61%
  */
 
 #include <vector>
@@ -77,6 +91,70 @@ public:
                 visit[y][x] = false;
             }
         }
+
+        return find;
+    }
+};
+
+bool Solution::visit[maxLength][maxLength]{};
+
+#include <array>
+#include <unordered_map>
+using std::unordered_map;
+using std::array;
+
+#define um unordered_map
+
+class Solution {
+private:
+    static constexpr int maxLength = 6;
+    static bool visit[maxLength][maxLength];
+    static constexpr array<std::pair<int, int>, 4> dir = 
+        {std::make_pair(-1, 0), std::make_pair(0, 1), std::make_pair(1, 0), std::make_pair(0, -1)};
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        um<char, int> cnt;
+        um<char, int> wordCnt;
+        int m = board.size(); int n = board[0].size();
+        // reset visit & record char cnt
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                visit[i][j] = false;
+                ++cnt[board[i][j]];
+            }
+        }
+        // record word char cnt
+        for (auto c : word) {
+            if (++wordCnt[c] > cnt[c])  // enhancement 1
+                return false;
+        }
+        // enhancement 2
+        int len = word.size();
+        if (wordCnt[word[len - 1]] < wordCnt[word[0]])
+            word = string(word.rbegin(), word.rend());  // 原来错误的写法：string(word.rend(), word.rbegin());
+
+        bool find = false;
+        auto dfs = [&](this auto&& dfs, int x, int y, int pLen) -> void {
+            if (board[x][y] != word[pLen]) return;
+            if (find || pLen == len - 1) {
+                find = true;
+                return;
+            }
+
+            visit[x][y] = true;
+            for (auto [dx, dy] : dir) {
+                int ax = x + dx;
+                int ay = y + dy;
+                if (ax >= 0 && ax < m && ay >= 0 && ay < n && !visit[ax][ay]) {
+                    dfs(ax, ay, pLen + 1);
+                }
+            }
+            visit[x][y] = false;
+        };
+
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j)
+                dfs(i, j, 0);
 
         return find;
     }
