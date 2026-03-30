@@ -35,6 +35,14 @@
  *      + rank:
  *          + 时间效率：3 ms, 击败 81.84%
  *          + 空间效率：12.39 MB, 击败 20.78%
+ *  + 【思路 3】：回溯
+ *      怎么能 O(1) 判是否冲突呢；
+ *      看的灵神的视频，通过牺牲 O(n) 的空间换取 O(1) 判定的时间效率
+ *          纵坐标 - 横坐标那个，可能是负的，所以还要 + n - 1
+ *      + 分析：几乎同上，除了遍历变 O(1); 空间多了，但还是 O(n)
+ *      + rank:
+ *          + 时间效率：1 ms, 击败 100%
+ *          + 空间效率：11.99 MB, 击败 30.53%
  */
 
 #include <vector>
@@ -93,6 +101,8 @@ public:
     }
 };
 
+/////////////////////////////////////////////////////////////////////////
+
 class Solution {
 private:
     vector<int> path;
@@ -132,6 +142,51 @@ public:
                     dfs(row + 1);
 
                     path.pop_back();
+                }
+            }
+        };
+
+        dfs(0);
+
+        return ans;
+    }
+};
+
+/////////////////////////////////////////////////////////////
+
+class Solution {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<bool> cols(n, false);
+        vector<bool> leftUp(2 * n, false);
+        vector<bool> rightUp(2 * n, false);
+
+        vector<int> path(n, 0);
+        vector<vector<string>> ans;
+        auto dfs = [&](this auto&& dfs, int row) -> void {
+
+            if (row == n) {
+                vector<string> tmp;
+                for (int i = 0; i < n; ++i) {
+                    vector<char> r(n, '.');
+                    r[path[i]] = 'Q';
+                    tmp.emplace_back(std::move(string(r.begin(), r.end())));
+                }
+                ans.emplace_back(std::move(tmp));
+                return;
+            }
+
+            for (int col = 0; col < n; ++col) {
+                // col 没选过 && 左斜不会冲突 && 右斜不会冲突
+                if (int _sub = col - row + n - 1, _sum = col + row;
+                    !cols[col] && !leftUp[_sub] && !rightUp[_sum]) {
+                    cols[col] = leftUp[_sub] = rightUp[_sum] = true;
+                    path[row] = col;
+
+                    dfs(row + 1);
+
+                    path[row] = 0;
+                    cols[col] = leftUp[_sub] = rightUp[_sum] = false;
                 }
             }
         };
