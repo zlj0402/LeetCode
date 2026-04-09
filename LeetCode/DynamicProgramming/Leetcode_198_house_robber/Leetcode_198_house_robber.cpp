@@ -32,12 +32,68 @@
  *          => dfs(idx - 2) + nums[idx]，就相当于这次选了；
  *      但递归下去，也是考虑到所有情况，时间复杂度，完全同 回溯；
  *      也会超时；
+ *  + 【思路 3】：自顶向下的动态规划 -- 记忆化搜索
+ *      做法同 【思路 2】纯递归写法，
+ *      只不过，使用数组记录，偷到 idx 时，最大的偷值；
+ *      f(idx) = max( f(idx - 1), f(idx - 2) + nums[idx] ), idx 的偷值，从公式可以看出，只依赖前两个的结果；
+ *          在计算 f(idx - 1) 时，会已经得到 f(idx - 1 - 2) 和 f(idx - 1 - 1) 的结果，
+ *          其中  f(idx - 1 - 1) 的结果，也会 f(idx) 用到，
+ *      把计算过的位置，存储到数组中，这样就可以在递归时，消掉许多分支，使得时间效率为 O(n);
+ *      + 分析：
+ *          + 时间复杂度：递归 O(n)
+ *          + 空间复杂度：递归 O(n) + 记忆 O(n) == O(n)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：10.61 MB, 击败 21.15%
+ *  + 【思路 4】：自底向上的动态规划 -- 记忆化搜索
+ *      跟【思路 3】是相反的，先知道 边界情况，知道最底下的情况，再往上推；
+ *      + 分析：
+ *          + 时间复杂度：迭代 O(n)
+ *          + 空间复杂度：记忆 O(n + 2) == O(n)
+ *      + rank: 
+ *          + 时间效率：0 ms，击败 100%
+ *          + 空间效率：10.36 MB, 击败 69.15%
+ *  + 【思路 5】：线性动态规划空间优化写法（自底向上的DP） -- 递推，滚动数组优化，也可以成为动态压缩
+ *      从上面的几个思路，我们可以知道，f(idx) 值依赖前两个的结果，那我们每次只要记住前两个的结果就好了；
+ *      做法类似 斐波那契数列；
+ *      再考虑好这里的边界条件，就是最初的两个值；
+ *      + 分析：
+ *          + 时间复杂度：迭代 O(n)
+ *          + 空间复杂度：O(1)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：9.98 MB, 击败 83.10%
+ *  + 【思路 5 -- 写法1.2】：线性动态规划空间优化写法（自底向上的DP） -- 递推，滚动数组优化，也可以成为动态压缩
+ *      nums.size() 是大于等于 1 的，
+ *      prev1 直接从 nums[1] 开始；
+ *      + 分析：同 【思路 5】
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：9.84 MB, 击败 96.06%
  */
-
 
 #include <vector>
 using std::vector;
 
+//【思路 5 -- 写法1.2】：线性动态规划空间优化写法（自底向上的DP） -- 递推，滚动数组优化，也可以成为动态压缩
+// 少遍历一次
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        
+        int prev2 = 0;  // f(-1)
+        int prev1 = nums[0]; // f(0)，因为 1 <= nums.size() <= 100
+        int cur = 0;
+        for (int i = 1; i < nums.size(); ++i) {
+            cur = std::max(prev2 + nums[i], prev1);
+            prev2 = prev1;
+            prev1 = cur;
+        }
+        return prev1;
+    }
+};
+
+//【思路 5】：线性动态规划空间优化写法（自底向上的DP） -- 递推，滚动数组优化，也可以成为动态压缩
 class Solution {
 public:
     int rob(vector<int>& nums) {    // 1 <= len(nums) <= 100
@@ -62,37 +118,39 @@ int main() {
     Solution().rob(nums);
 }
 
-// class Solution {
-// public:
-//     int rob(vector<int>& nums) {
-//         int n = nums.size();
-//         vector<int> rec(n + 2, 0);
-//         for (int i = 0; i < n; ++i) {
-//             rec[i + 2] = std::max(rec[i + 1], rec[i] + nums[i]);
-//         }
-//         return rec[n + 1];
-//     }
-// };
+// 【思路 4】：自底向上的动态规划 -- 记忆化搜索
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> rec(n + 2, 0);
+        for (int i = 0; i < n; ++i) {
+            rec[i + 2] = std::max(rec[i + 1], rec[i] + nums[i]);
+        }
+        return rec[n + 1];
+    }
+};
 
-// class Solution {
-// public:
-//     int rob(vector<int>& nums) {
-//         int n = nums.size();
-//         vector<int> rec(n, -1);
+// 【思路 3】：动态规划 -- 记忆化搜索，自顶向下的动态规划
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> rec(n, -1);
 
-//         auto dfs = [&](this auto&& dfs, int idx) -> int {
-//             if (idx < 0) return 0;
+        auto dfs = [&](this auto&& dfs, int idx) -> int {
+            if (idx < 0) return 0;
             
-//             if (rec[idx] >= 0) return rec[idx];
+            if (rec[idx] >= 0) return rec[idx];
 
-//             rec[idx] = std::max(dfs(idx - 1), dfs(idx - 2) + nums[idx]);
+            rec[idx] = std::max(dfs(idx - 1), dfs(idx - 2) + nums[idx]);
             
-//             return rec[idx];
-//         };
+            return rec[idx];
+        };
 
-//         return dfs(n - 1);
-//     }
-// };
+        return dfs(n - 1);
+    }
+};
 
 // 【思路 2】：纯递归写法
 // 纯递归写法，实质也是回溯的时间复杂度，递归到了各个分支
