@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 13/4/2026
  * 
+ * @updated:
+ *  + 20/4/2026: add 【思路 1 - 写法 2】
+ * 
  * @Difficulty: Medium
  * 
  * @Label: backtracking(permutation) & enum
@@ -33,6 +36,16 @@
  *      ---
  *      看了时间效率的第一个柱子，同样的做法，感觉通过 next_permutation 库接口的方式，效率要比我的方式，要高的多；
  *      明天再用这个接口写一下；
+ * 
+ * + 【思路 1 - 写法 2】
+ *      通过 <algorithm> 当中的库函数 next_permutation，得到数组的全排列；
+ *      效率非常高；
+ *      + 分析：
+ *          + 时间复杂度：O((mn)^2) --> next_permutation O(mn) * 遍历得到一个结果 O(mn)
+ *          + 空间复杂度：O(mn) -- 数组
+ *      + rank：
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：22.16 MB, 击败 40.00%
  */
 
 #include <vector>
@@ -41,9 +54,48 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+#include <algorithm>
+
+// 【思路 1 - 写法 2】
+class Solution {
+public:
+    int minimumMoves(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        vector<std::pair<int, int>> from;
+        vector<std::pair<int, int>> to;
+
+        // list from/to
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] > 1) {
+                    for (int k = 0; k < grid[i][j] - 1; ++k) {
+                        from.push_back({i, j});
+                    }
+                }
+                else if (grid[i][j] == 0) {
+                    to.push_back({i, j});
+                }
+            }
+        }
+        
+        int minSum = INT_MAX;
+        do {
+            int sum = 0;
+            for (int i = 0; i < from.size(); ++i)
+                sum += std::abs(from[i].first - to[i].first) + std::abs(from[i].second - to[i].second);
+            if (minSum > sum) minSum = sum; 
+        } while (next_permutation(from.begin(), from.end()));
+
+        return minSum;
+    }
+};
+
 #include <cmath>
 #include <cassert>
 
+// 【思路 1】：回溯 | 排列 | 枚举
 class Solution {
 private:
     static int calcManhattanDistance(vector<std::pair<int, int>> &path, vector<std::pair<int, int>> &to) {
