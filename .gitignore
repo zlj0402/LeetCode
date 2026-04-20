@@ -361,3 +361,14 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Claude Code config - keep structure but ignore sensitive settings
+.claude/settings.json
+.claude/settings.local.json
+.claude/sessions/
+.claude/projects/*/memory/
+.claude/telemetry/
+.claude/backups/
+!.claude/
+!.claude/projects/
+!.claude/projects/*/
