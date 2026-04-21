@@ -1,0 +1,11 @@
+{
+  "terminal.integrated.env.windows": {
+    "CLAUDE_CONFIG_DIR": "${workspaceFolder}\\.claude"
+  },
+  "terminal.integrated.env.linux": {
+    "CLAUDE_CONFIG_DIR": "${workspaceFolder}/.claude"
+  },
+  "terminal.integrated.env.osx": {
+    "CLAUDE_CONFIG_DIR": "${workspaceFolder}/.claude"
+  }
+}

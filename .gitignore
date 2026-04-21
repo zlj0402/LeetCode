@@ -362,13 +362,15 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# Claude Code config - keep structure but ignore sensitive settings
-.claude/settings.json
-.claude/settings.local.json
-.claude/sessions/
-.claude/projects/*/memory/
-.claude/telemetry/
-.claude/backups/
-!.claude/
+# Claude Code - 跨平台同步记忆
+.claude/*
 !.claude/projects/
 !.claude/projects/*/
+!.claude/projects/*/memory/
+!.claude/projects/*/memory/**/
+!.claude/projects/*/MEMORY.md
+!.claude/settings.json.template
+!.claude/README.md
+# Ignore large conversation history files
+.claude/projects/*.jsonl
+.claude/projects/*/*.jsonl
