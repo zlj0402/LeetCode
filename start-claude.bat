@@ -7,6 +7,7 @@ set "SCRIPT_DIR=%~dp0"
 REM Remove trailing backslash
 set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 
+REM => or, set "CLAUDE_CONFIG_DIR=%~dp0.claude"
 REM Set Claude config directory
 set "CLAUDE_CONFIG_DIR=%SCRIPT_DIR%\.claude"
 
