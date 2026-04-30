@@ -5,7 +5,7 @@ def get_current_path() -> str:
 	return os.path.abspath(os.path.dirname(__file__))
 
 def main():
-    target_file = "sample.text"
+    target_file = "sample.txt"
     file_with_path = os.path.join(get_current_path(), target_file)
     MbusFrameVerify(file_with_path).output()
 

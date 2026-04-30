@@ -9,3 +9,4 @@ This file indexes persistent memories for cross-platform synchronization.
 - [M-Bus 数据容器](mbus_data_container.md) — 无线帧封装到有线消息的数据结构
 - [M-Bus Security Modes 示例](mbus_security_modes_examples.md) — 安全模式5/7/8/9/10详细示例
 - [M-Bus 描述符](mbus_descriptors.md) — Storage/Tariff/Subunit 描述符定义
+- [M-Bus 协议全面总结](mbus_protocol_comprehensive.md) — EN 13757系列完整技术总结：协议层次、安全机制、地址系统、SITP、AFL/TPL结构
