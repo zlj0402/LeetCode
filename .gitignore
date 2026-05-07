@@ -364,13 +364,9 @@ FodyWeavers.xsd
 
 # Claude Code - 跨平台同步记忆
 .claude/*
-!.claude/projects/
-!.claude/projects/*/
 !.claude/projects/*/memory/
-!.claude/projects/*/memory/**/
 !.claude/projects/*/MEMORY.md
 !.claude/settings.json.template
 !.claude/README.md
 # Ignore large conversation history files
-.claude/projects/*.jsonl
-.claude/projects/*/*.jsonl
+.claude/**/*.jsonl 

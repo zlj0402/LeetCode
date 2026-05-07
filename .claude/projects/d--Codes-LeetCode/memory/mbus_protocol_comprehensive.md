@@ -591,6 +591,64 @@ CF: H/R | CC | IIII | B/A/S=1 | KKKK | V | DD
 
 ## 十、安全服务 (Chapter 9)
 
+### 密钥类型概述
+
+**M-Bus 使用对称密钥加密**：
+
+- **算法**: AES-128（对称加密算法）
+- **密钥长度**: 16字节（128位）
+- **密钥共享**: 仪表与 HES/通信伙伴共享同一密钥
+- **密钥来源**: 出厂预置或 SITP 安全传输
+- **非对称密钥**: **不使用**（仪表资源受限，不适合公钥加密）
+
+**EN 13757-7:2018 9.1 原文声明**：
+> "安全服务基于对称密钥方法的使用。AES 算法及其操作模式已获得丰富经验，其强度已由密码专家评估。"
+
+### 密钥生命周期
+
+**密钥来源**：
+
+| 阶段 | 来源 | 说明 |
+|------|------|------|
+| 出厂预置 | 制造商写入 | 每个仪表唯一密钥（至少8字节不同） |
+| 安装/系统集成 | SITP 传输 | 通过现有密钥加密传输新密钥 |
+| 运行更换 | SITP 更新 | 密钥更新、激活、停用、销毁 |
+
+**密钥存储架构**：
+
+```
+仪表密钥存储
+├── 持久密钥（长期存储）
+│   ├── Key ID 0-15，每个可有多个版本
+│   └── AES-128 密钥 (16字节)
+│
+└── 临时密钥（动态生成，不持久存储）
+    ├── 从持久密钥通过 KDF 派生
+    └── 用于单次消息加密/认证
+```
+
+**密钥数量关系**：
+
+| 安全模式 | 密钥使用方式 | 密钥数量 |
+|------|------|------|
+| 模式 5 | 持久密钥直接使用 | 1个（加密） |
+| 模式 7 | 持久密钥派生临时密钥 | 1个MK → 2个临时（加密+认证） |
+| 模式 8 | 多个持久密钥 | 3个（Kenc₁, Kmac₁, Kmac₂） |
+| 模式 9/10 | 持久密钥派生临时密钥 | 1个MK → 1个临时（加密+认证共用） |
+
+**密钥管理流程**：
+
+```
+密钥更换流程 (SITP)：
+1. HES → ACESM: ACTION.req(set_encryption_key) - 设置新密钥
+2. HES → ACESM: ACTION.req(transfer_security_information) - SITP传输
+3. ACESM → M-Bus: SND_UD2 (CI=C3h, SITP-Block BCF=00h) - 传输密钥
+4. M-Bus → ACESM: RSP_UD (CI=C5h, SITP-Block BCF=80h) - 响应
+5. ACESM → M-Bus: SND_UD2 (CI=C3h, SITP-Block BCF=01h) - 激活密钥
+6. M-Bus → ACESM: RSP_UD (CI=C5h, SITP-Block BCF=81h) - 响应
+7. ACESM → HES: GET.req(invocation_status) - 状态查询
+```
+
 ### 安全目标 (表46)
 
 | 安全服务 | 目标 |
@@ -827,6 +885,8 @@ IV = 固定字段(8B) + 调用字段(5B)
 | 密钥版本 | 1B | 密钥版本 |
 | 填充 | 1B | 00h |
 
+**注意**：密钥传输结构**不含 Security Mode 参数**，仅传输密钥本身和密钥标识信息。
+
 ### 数据结构 02h (表A.7) - 激活/停用/销毁
 
 | 字段 | 长度 | 内容 |
@@ -873,6 +933,52 @@ IV = 固定字段(8B) + 调用字段(5B)
 | 25h | 数据内容错误: 解封装失败 (ICV 检查失败) |
 | 26h | 数据内容错误: MAC 错误 |
 | 27h | 数据内容错误: 未知协议标识符 |
+
+### 有线 M-Bus 安全模式 5 示例 (CEN/TR 17167 F.2)
+
+**设备信息示例**：
+| 参数 | 值 |
+|------|------|
+| 设备类型 | 热成本分配器 (HCA) - 08h |
+| 制造商 | QDS (93h 44h) |
+| 仪表识别号 | 55667788 |
+| 版本 | 85 (55h) |
+| AES 密钥 | 16字节对称密钥 |
+
+**IV 初始化向量 (模式 5)**：
+```
+IV (16字节) = 制造商(2B) + 识别号(4B, LSB先) + 版本(1B) + 设备类型(1B) + 访问号(8B)
+示例: 93 44 88 77 66 55 55 08 00 00 00 00 00 00 00 00
+```
+
+**有线 M-Bus RSP-UD 帧结构示例**：
+```
+帧结构 (FT1.2):
+┌─────────┬────────────────────────────────────────────────┐
+│ DLL     │ 68h 22h 22h 68h 08h FDh                        │
+├─────────┼────────────────────────────────────────────────┤
+│ TPL     │ CI=72h (长Header)                              │
+│         │ 识别号: 88 77 66 55                            │
+│         │ 制造商: 93 44                                  │
+│         │ 版本: 55h                                      │
+│         │ 设备类型: 08h                                  │
+│         │ 访问号: 00h                                    │
+│         │ 状态: 04h                                      │
+│         │ CF: 00h 05h (Mode 5, 1个加密块)               │
+├─────────┼────────────────────────────────────────────────┤
+│ 加密块  │ AES-check: 2F 2F → 加密后: 00 DF              │
+│ (16B)   │ 应用数据 (DR1+DR2+DR3) → 加密后: E2 A7...     │
+├─────────┼────────────────────────────────────────────────┤
+│ 明文    │ DR4: 温度 25°C (01 5B 19) - 不加密             │
+├─────────┼────────────────────────────────────────────────┤
+│ DLL尾   │ Checksum: 40h, Stop: 16h                      │
+└─────────┴────────────────────────────────────────────────┘
+```
+
+**部分加密特性**：
+- 加密块: AES-check(2B) + 应用数据(14B) = 16字节
+- 明文部分: 温度数据(3B) - 允许未加密访问操作参数
+- CF.NNNN = 0001b 表示 1个加密块
 
 ---
 
@@ -947,6 +1053,118 @@ IV = 固定字段(8B) + 调用字段(5B)
 3. ACESM → M-Bus: SND_UD2 (CI=C3h, SITP-Block)
 4. M-Bus → ACESM: RSP_UD (CI=C5h, SITP-Block)
 5. ACESM → HES: GET.req(invocation_status)
+
+### DLMS/COSEM M-Bus Client 对象 (Blue Book 4.8.3)
+
+**class_id = 72, version = 2**
+
+| 属性编号 | 属性名 | 数据类型 | 说明 |
+|------|------|------|------|
+| 1 | logical_name | octet-string | 逻辑名 |
+| 2 | mbus_port_reference | octet-string | M-Bus端口引用 |
+| 3 | capture_definition | array | 捕获定义 |
+| 4 | capture_period | double-long-unsigned | 捕获周期 |
+| 5 | primary_address | unsigned | 主地址 |
+| 6 | identification_number | double-long-unsigned | 识别号 |
+| 7 | manufacturer_id | long-unsigned | 制造商ID |
+| 8 | version | unsigned | 版本 |
+| 9 | device_type | unsigned | 设备类型 |
+| 10 | access_number | unsigned | 访问号 |
+| 11 | status | unsigned | 状态 |
+| 12 | alarm | unsigned | 告警 |
+| 13 | configuration | long-unsigned | 配置字段（从仪表帧获取） |
+| 14 | encryption_key_status | enum | 加密密钥状态 |
+
+**关键属性说明**：
+
+- **configuration (属性13)**：携带 EN 13757-7 定义的配置字段 CF，包含 Security Mode 和加密块数信息。**每次仪表 readout 后更新**（从仪表帧解析存储）。
+
+- **encryption_key_status (属性14)**：密钥状态枚举：
+  | 值 | 含义 |
+  |------|------|
+  | (0) | no encryption key |
+  | (1) | encryption_key set |
+  | (2) | encryption_key transferred |
+  | (3) | encryption_key set and transferred |
+  | (4) | encryption_key in use |
+
+### set_encryption_key 方法 (Blue Book 4.8.3.3.7)
+
+```
+方法签名: set_encryption_key(data)
+参数类型: octet-string (encryption_key)
+参数内容: 16字节 AES-128 密钥
+
+功能：
+- 设置 M-Bus client 的加密密钥
+- 启用加密通信
+
+关键说明：
+- 参数仅包含密钥，不含 Security Mode 参数
+- 可传入空字符串禁用加密
+- 安装子表后默认密钥为空（加密禁用）
+```
+
+### Security Mode 决定机制
+
+**Security Mode 由仪表固件预设决定，不可通过协议动态配置。**
+
+| 来源 | 说明 |
+|------|------|
+| EN 13757-7 SITP | 密钥传输结构不含 Security Mode 参数 |
+| DLMS/COSEM | set_encryption_key 参数仅为密钥 |
+| GCP 6.11.3.2.1 | "每个特定的 M-Bus 子表仅支持一种加密模式" |
+
+**仪表支持的加密模式组合**：
+
+| 仪表类型 | 支持的模式 | 可切换性 |
+|------|------|------|
+| 无加密仪表 | 仅 Mode 0 | 无法启用加密 |
+| Mode 5 仪表 | Mode 0 + Mode 5 | 可在两者间切换 |
+| Mode 7 仪表 | Mode 0 + Mode 7 | 可在两者间切换 |
+
+**加密启用/禁用切换**：
+
+| 操作 | 效果 |
+|------|------|
+| set_encryption_key("") | 禁用加密 → Mode 0 |
+| set_encryption_key(16B密钥) | 启用加密 → Mode 5 或 7（取决于仪表固件） |
+
+**encryption_key_status 状态转换 (Blue Book Annex B)**：
+
+```
+状态转换流程：
+
+State (0)                    State (1)                    State (2)
+no encryption key    →→→    encryption_key set    →→→    encryption_key transferred
+                       set_encryption_key()          transfer_key() 或
+                                                     transfer_security_information()
+
+State (2)                    State (3)                    State (4)
+encryption_key transferred  →→→  encryption_key set  →→→  encryption_key in use
+                       set_encryption_key()          加密帧成功交换
+
+四种安装场景：
+a) 仪表预置密钥不可更换：直接进入 State (2)
+b) 仪表预置密钥可更换：需传输新密钥后激活
+c) 仪表无预置密钥可设置：需设置并传输密钥
+d) 仪表不使用加密：保持 State (0)
+```
+
+**如何确定仪表使用的 Security Mode**：
+
+```
+流程：
+1. ACESM 设置密钥 → 不知道模式
+2. 传输密钥到仪表 → 不知道模式
+3. 收到仪表响应帧 → 从 CF.MMMMM 解析 → 知道模式
+4. configuration 属性更新 → 存储解析结果
+
+Security Mode 信息来源：
+- 仪表发送的每个帧携带 CF 字段
+- CF.MMMMM 位（位8-12）指示 Security Mode
+- ACESM 从帧解析，不是从配置设置
+```
 
 ---
 
