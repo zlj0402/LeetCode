@@ -10,3 +10,6 @@ This file indexes persistent memories for cross-platform synchronization.
 - [M-Bus Security Modes 示例](mbus_security_modes_examples.md) — 安全模式5/7/8/9/10详细示例
 - [M-Bus 描述符](mbus_descriptors.md) — Storage/Tariff/Subunit 描述符定义
 - [M-Bus 协议全面总结](mbus_protocol_comprehensive.md) — EN 13757系列完整技术总结：协议层次、安全机制、地址系统、SITP、AFL/TPL结构
+- [Blue Book M-Bus Client 密钥管理方法原文](blue_book_mbus_key_methods.md) — DLMS/COSEM 4.8.3.3.7-4.8.3.3.9：set_encryption_key、transfer_key、transfer_security_information 原文
+- [GCP 6.11.3.5 M-Bus Key Transfer 原文](gcp_6_11_3_5_mbus_key_transfer.md) — ACESM GCP 密钥传输流程：HES→ACESM→M-Bus Device SITP Block 转发
+- [EN 13757-4 Table 34 C-field Function Codes](en13757_4_table34_cfield.md) — EN 13757-4 Table 34：C-field功能码定义，包含SND-UD2定义（footnote d）
