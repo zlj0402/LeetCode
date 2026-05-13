@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 8/5/2026
  * 
+ * @updated:
+ *  + 13/5/2026: add 【思路 3】：递归，记忆化搜索
+ * 
  * @Difficulty: Medium
  * 
  * @Label: 01 Knapsack | backtracking
@@ -35,119 +38,129 @@
  *      + rank:
  *          + 时间效率：459 MB, 击败 21.86%
  *          + 空间复杂度：11.41 MB， 击败 90.74%
+ * + 【思路 3】：递归，记忆化搜索
+ *      >>> 转换为只要能找到 和为xxx 的问题；<<<
+ *      转换问题的思路，见代码中附带的连着的注释；
+ * 
+ *      递归的方式，dfs 返回的结果表示，
+ *      在递归中，dfs(idx - 1, left) 返回的是从位置 0 到位置 idx-1 的所有可能组合数，是一个完整的结果，不是增量。
+ *      >>> 所以是 res =，而不是 res +=; <<<
+ *      + 分析：
+ *          + 时间复杂度：O(n)
+ *          + 空间复杂度：O(n * dp_size)
+ *      + rank:
+ *          + 时间效率：3 ms, 击败 72.20%
+ *          + 空间效率：17.31 MB, 击败 8.49%
  */
 
 #include <vector>
+#include <algorithm>
 #include <numeric>
-#include <unordered_set>
-using std::unordered_set;
 using std::vector;
 
-#define us unordered_set
-
+// 【思路 3】：递归，记忆化搜索
 class Solution {
 public:
     int findTargetSumWays(vector<int>& nums, int target) {
-        // 假定：正数之和为 p (-> 整数)
-        //      负数绝对值之和为 s - p
-        // target = p - (s - p)，现在 p >= 0, s - p >= 0, s > 0
-        // 得：p = (target + s) / 2 ==> if ( sum + target < 0 || (sum + target) % 2)
-        int sum = accumulate(nums.begin(), nums.end(), 0);
-        if ( sum + target < 0 || (sum + target) % 2) {
-            return 0;
-        }
-        int p = (sum + target) / 2;
-        vector<int> dp(p + 1, 0);
-        vector<us<int>> rec(p + 1, us<int>());
-        dp[0] = 1;
+        // 假设：加正号的那些数的和是 p，会加负号的那些数的和是 q；
+        // 则有：p - q = target
+        // 有 nums，我们就能求出所有数之和：s
+        // 则有：s = p + q
+        // 得到：p = (s + target) / 2, q = (s - target) / 2
+        
+        // p 和 q 都是要 >= 0 的，
+        // 还能得到什么呢？
+        // (s + target) >= 0, (s - target) / 2 >= 0 ==> s - abs(target) >= 0
+        // p 和 q 都是整数 ==> (s + target) % 2 == 0 or (s - target) % 2 == 0 取其中一个就可以
+        // 如果上述两个条件都完成不了的话，也就不符合我们的推论，也就无法达成题目的要求；
 
-        for (int i = 1; i <= p; ++i) {
-            for (int j = 0; j < nums.size(); ++j) {
-                if (nums[j] < 0) {
-                    continue;
-                }
-                
-                if (i - nums[j] < 0) {
-                    dp[i] += 0;
-                }
-                else {
-                    if (rec[i - nums[j]].find(j) != rec[i - nums[j]].end()) {
-                        continue;
-                    }
-                    dp[i] += dp[i - nums[j]];
-                    rec[i].insert(rec[i - nums[j]].begin(), rec[i - nums[j]].end());
-                    rec[i].insert(j);
-                }
+        // 满足上面的条件，就能有组合的可能，但有多少种可能，就需要算法来解决了
+        // 对于每个 case, s 和 target 都是已知的
+        // 我们需要知道组合得到 p 有多少种可能（直到 p 就直到 q，探寻其中一方的可能，就直到另一方有几种可能）
+
+        // 当 target > 0 时，q 值更小；q = (s - target) / 2
+        // 当 target < 0 时，p 值更小；p = (s + target) / 2
+        // ==> 无论何时，s - abs(target) 都是任何情况下，最小的那一方；
+
+        int new_target = accumulate(nums.begin(), nums.end(), 0) - std::abs(target);
+
+        if (new_target / 2 < 0 || new_target % 2) return 0;
+
+        vector dp(nums.size(), vector<int>(new_target + 1, -1));
+        auto dfs = [&](this auto&& dfs, int idx, int left) -> int {
+            if (idx < 0) return left == 0 ? 1 : 0;
+
+            auto &res = dp[idx][left];
+            
+            if (res > -1) return res;
+            else if (left < nums[idx]) {
+                return res = dfs(idx - 1, left); // 意思：只能不选nums[idx]，返回的就是不选情况下的所有组合数; // 如果用 +=，会把之前可能存在的垃圾值也加上，导致错误结果
             }
-        }
+            else {
+                return res = dfs(idx - 1, left - nums[idx]) + dfs(idx - 1, left);
+            }
+        };
 
-        return dp[p];
+        return dfs(nums.size() - 1, new_target / 2);
     }
 };
 
-int main() {
-    vector<int> nums = {1, 1, 1, 1, 1};
-    int target = 3;
-
-    Solution().findTargetSumWays(nums, target);
-}
-
 // 【思路 2】：回溯，转换问题后剪枝
-// class Solution {
-// public:
-//     int findTargetSumWays(vector<int>& nums, int target) {
-//         // + 正数和：p
-//         // - 正数和：s - p
-//         // 公式：p - (s - p) = t
-//         // 得：p = (s + t) / 2
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        // + 正数和：p
+        // - 正数和：s - p
+        // 公式：p - (s - p) = t
+        // 得：p = (s + t) / 2
 
-//         int sum = accumulate(nums.begin(), nums.end(), 0);
+        int sum = accumulate(nums.begin(), nums.end(), 0);
 
-//         auto dfs = [&](this auto&& dfs, int idx, int left) {
-//             if (idx < 0) {
-//                 return left == 0 ? 1 : 0;
-//             }
+        auto dfs = [&](this auto&& dfs, int idx, int left) {
+            if (idx < 0) {
+                return left == 0 ? 1 : 0;
+            }
 
-//             if (nums[idx] > left) {
-//                 return dfs(idx - 1, left);
-//             }
-//             else {
-//                 return dfs(idx - 1, left) + dfs(idx - 1, left - nums[idx]);
-//             }
-//         };
+            if (nums[idx] > left) {
+                return dfs(idx - 1, left);
+            }
+            else {
+                return dfs(idx - 1, left) + dfs(idx - 1, left - nums[idx]);
+            }
+        };
 
-//         if (sum + target < 0 || (sum + target) % 2) {
-//             return 0;
-//         }
+        if (sum + target < 0 || (sum + target) % 2) {
+            return 0;
+        }
 
-//         return dfs(nums.size() - 1, (sum + target) / 2);
-//     }
-// };
+        return dfs(nums.size() - 1, (sum + target) / 2);
+    }
+};
 
 // 【思路 1】：纯回溯
-// class Solution {
-// public:
-//     int findTargetSumWays(vector<int>& nums, int target) {
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
         
-//         int cnt = 0;
-//         auto dfs = [&](this auto&& dfs, int idx, int left) {
+        int cnt = 0;
+        auto dfs = [&](this auto&& dfs, int idx, int left) {
 
-//             if (idx >= nums.size()) {
-//                 if (left == target) {
-//                     ++cnt;
-//                 }
-//                 return;
-//             }
+            if (idx >= nums.size()) {
+                if (left == target) {
+                    ++cnt;
+                }
+                return;
+            }
 
-//             // 不选，加
-//             dfs(idx + 1, left + nums[idx]);
+            // 不选，加
+            dfs(idx + 1, left + nums[idx]);
 
-//             // 选，减
-//             dfs(idx + 1, left - nums[idx]);
-//         };
+            // 选，减
+            dfs(idx + 1, left - nums[idx]);
+        };
 
-//         dfs(0, 0);
+        dfs(0, 0);
 
-//         return cnt;
-//     }
-// };
+        return cnt;
+    }
+};
