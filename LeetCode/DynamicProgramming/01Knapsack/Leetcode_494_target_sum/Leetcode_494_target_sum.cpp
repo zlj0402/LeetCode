@@ -46,17 +46,49 @@
  *      在递归中，dfs(idx - 1, left) 返回的是从位置 0 到位置 idx-1 的所有可能组合数，是一个完整的结果，不是增量。
  *      >>> 所以是 res =，而不是 res +=; <<<
  *      + 分析：
- *          + 时间复杂度：O(n)
- *          + 空间复杂度：O(n * dp_size)
+ *          + 时间复杂度：O(n * dp_size), dp_size 可用 sum 代替，即 O(n * sum)
+ *          + 空间复杂度：O(n * dp_size)，dp_size 可用 sum 代替，即 O(n * sum)
  *      + rank:
  *          + 时间效率：3 ms, 击败 72.20%
  *          + 空间效率：17.31 MB, 击败 8.49%
+ * + 【思路 4】：递推，填表
+ *      + 分析：同上
+ *      + rank:
+ *          + 时间效率：7 ms, 击败 44.24%
+ *          + 空间效率：15.06 MB, 击败 31.43%
  */
 
+// 【思路 4】：递推，填表
 #include <vector>
 #include <algorithm>
 #include <numeric>
 using std::vector;
+
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int sum_target = std::accumulate(nums.begin(), nums.end(), 0) - std::abs(target);
+        if (sum_target < 0 || sum_target % 2) return 0;
+
+        int size = nums.size();
+        target = sum_target / 2;
+        vector dp(size + 1, vector<int>(sum_target / 2 + 1, 0));
+        dp[0][0] = 1;
+        // f[idx][left] = f[idx - 1][left] + f[idx - 1][left - nums[idx]]
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j <= target; ++j) {
+                if (j < nums[i]) {
+                    dp[i + 1][j] += dp[i][j];
+                }
+                else {
+                    dp[i + 1][j] += dp[i][j] + dp[i][j - nums[i]];
+                }
+            }
+        }
+
+        return dp[size][target];
+    }
+};
 
 // 【思路 3】：递归，记忆化搜索
 class Solution {
