@@ -1,0 +1,77 @@
+# run: litellm --config litellm_config.yaml --port 4000
+
+model_list:
+  - model_name: glm-5
+    litellm_params:
+      model: anthropic/glm-5
+      api_key: "sk-sp-"
+      api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
+    # model_info:
+    #   max_tpm: 100000      # 每分钟最大 token 数
+    #   max_rpm: 60          # 每分钟最大请求数
+
+  - model_name: qwen3.6-plus
+    litellm_params:
+      model: anthropic/qwen3.6-plus
+      api_key: "sk-sp-"
+      api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
+    # model_info:
+    #   max_tpm: 100000      # 每分钟最大 token 数
+    #   max_rpm: 60          # 每分钟最大请求数
+
+  - model_name: qwen3.6-flash
+    litellm_params:
+      model: anthropic/qwen3.6-flash
+      api_key: "sk-sp-"
+      api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
+    # model_info:
+    #   max_tpm: 100000      # 每分钟最大 token 数
+    #   max_rpm: 60          # 每分钟最大请求数
+
+
+# Gateway 设置
+general_settings:
+  master_key: "sk-platform2026"
+  # 启用数据库存储用户数据（SQLite，用于记录每个 key 的使用量）
+  # sqlite:/// 后面是 db 文件的绝对路径
+  # database_url: "sqlite:///./litellm_users.db"
+
+# 日志级别
+litellm_settings:
+  drop_params: true  # 自动丢弃不支持的参数
+  # 全局 proxy 预算上限（可选）
+  # litellm_proxy_budget: 100.0
+
+# 路由设置
+router_settings:
+  routing_strategy: "simple-shuffle"
+  num_retries: 3
+  retry_after: 0.3
+  allowed_fails: 3      # 允许失败次数，超过后冷却
+
+# ============================================================
+# 创建带限流的用户 Key（启动后执行）:
+#
+# 1. 创建带预算上限的 Key（$5 上限）:
+# curl -X POST http://localhost:4000/key/generate `
+#   -H "Authorization: Bearer sk-platform2026" `
+#   -H "Content-Type: application/json" `
+#   -d '{"max_budget": 5.0, "user_id": "user_001", "key_alias": "user_001"}'
+#
+# 2. 创建带 TPM/RPM 限制的 Key:
+# curl -X POST http://localhost:4000/key/generate `
+#   -H "Authorization: Bearer sk-platform2026" `
+#   -H "Content-Type: application/json" `
+#   -d '{"tpm_limit": 50000, "rpm_limit": 30, "user_id": "user_002"}'
+#
+# 3. 创建带并发限制的 Key:
+# curl -X POST http://localhost:4000/key/generate `
+#   -H "Authorization: Bearer sk-platform2026" `
+#   -H "Content-Type: application/json" `
+#   -d '{"max_parallel_requests": 5, "user_id": "user_003"}'
+#
+# 4. 查看所有用户 Key 使用情况:
+# curl http://localhost:4000/key/info `
+#   -H "Authorization: Bearer sk-platform2026"
+#
+# ============================================================
