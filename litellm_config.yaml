@@ -4,7 +4,7 @@ model_list:
   - model_name: glm-5
     litellm_params:
       model: anthropic/glm-5
-      api_key: "sk-sp-"
+      api_key: "sk-sp-febb8ce375bd4eb7ad44db55d3b8fb0c"
       api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
     # model_info:
     #   max_tpm: 100000      # 每分钟最大 token 数
@@ -13,7 +13,7 @@ model_list:
   - model_name: qwen3.6-plus
     litellm_params:
       model: anthropic/qwen3.6-plus
-      api_key: "sk-sp-"
+      api_key: "sk-sp-febb8ce375bd4eb7ad44db55d3b8fb0c"
       api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
     # model_info:
     #   max_tpm: 100000      # 每分钟最大 token 数
@@ -22,16 +22,27 @@ model_list:
   - model_name: qwen3.6-flash
     litellm_params:
       model: anthropic/qwen3.6-flash
-      api_key: "sk-sp-"
+      api_key: "sk-sp-febb8ce375bd4eb7ad44db55d3b8fb0c"
       api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
     # model_info:
     #   max_tpm: 100000      # 每分钟最大 token 数
     #   max_rpm: 60          # 每分钟最大请求数
 
+  - model_name: qwen3-max-2026-01-23
+    litellm_params:
+      model: anthropic/qwen3-max-2026-01-23
+      api_key: "sk-sp-febb8ce375bd4eb7ad44db55d3b8fb0c"
+      api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
+
+  - model_name: qwen3-coder-next
+    litellm_params:
+      model: anthropic/qwen3-coder-next
+      api_key: "sk-sp-febb8ce375bd4eb7ad44db55d3b8fb0c"
+      api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
 
 # Gateway 设置
 general_settings:
-  master_key: "sk-platform2026"
+  master_key: "sk-123456"
   # 启用数据库存储用户数据（SQLite，用于记录每个 key 的使用量）
   # sqlite:/// 后面是 db 文件的绝对路径
   # database_url: "sqlite:///./litellm_users.db"
@@ -43,11 +54,11 @@ litellm_settings:
   # litellm_proxy_budget: 100.0
 
 # 路由设置
-router_settings:
-  routing_strategy: "simple-shuffle"
-  num_retries: 3
-  retry_after: 0.3
-  allowed_fails: 3      # 允许失败次数，超过后冷却
+# router_settings:
+#   routing_strategy: "simple-shuffle"
+#   num_retries: 3
+#   retry_after: 0.3
+#   allowed_fails: 3      # 允许失败次数，超过后冷却
 
 # ============================================================
 # 创建带限流的用户 Key（启动后执行）:

@@ -364,6 +364,12 @@ FodyWeavers.xsd
 
 # Claude Code - 跨平台同步记忆
 .claude/*
+
+# 取消忽略目录本身
+!.claude/skills/
+# 取消忽略具体内容
+!.claude/skills/**
+
 !.claude/projects/*/memory/
 !.claude/projects/*/MEMORY.md
 !.claude/settings.json.template
