@@ -8,6 +8,7 @@
  *  + 13/5/2026: add 【思路 3】：递归，记忆化搜索
  *  + 18/5/2026: add 【思路 4】：递推，填表
  *  + 21/5/2026: add 【思路 5】：状态压缩 & 滚动数组
+ *  + 22/5/2026: add 【思路 6】：状态压缩 & 滚动数组，使用一个数组
  * 
  * @Difficulty: Medium
  * 
@@ -79,6 +80,17 @@
  *      + rank:
  *          + 时间效率：3 ms, 击败 72.16%
  *          + 空间效率：12.51 MB, 击败 38.77%
+ * + 【思路 6】：状态压缩 & 滚动数组，使用一个数组
+ *      知道【思路 5】的做法后（思路 5 不是自己想到的），我就看出来有，只用一个数组的可能了；
+ *      【思路 4】 -> 【思路 5】 -> 【思路 6】 这是一个递进的过程；
+ *      思路是完全一样的递推，只是对空间（对状态）的使用更精简，避免不必要的开销；
+ *  
+ *      + 分析：
+ *          + 时间复杂度：O(n * sum)，其实比【思路 5】的时间效率更高，每一组状态，都省略了 nums[i] 次的遍历
+ *          + 空间复杂度：O(sum)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：12.31 MB, 击败 44.90%
  */
 
 #include <vector>
@@ -87,7 +99,7 @@
 #include <numeric>
 using std::vector;
 
-// 【思路 5】：状态压缩 & 滚动数组
+// 【思路 6】：状态压缩 & 滚动数组，使用一个数组
 class Solution {
 public:
     int findTargetSumWays(vector<int>& nums, int target) {
@@ -95,32 +107,60 @@ public:
         if (sum_target < 0 || sum_target % 2) return 0;
 
         target = sum_target / 2;
-        vector dp(2, vector<int>(target + 1, 0));
-        dp[1][0] = 1;
-
+        vector<int> dp(target + 1, 0);
+        dp[0] = 1;
         int size = nums.size();
-        int cur, pre;
+
         for (int i = 0; i < size; ++i) {
-            cur = i % 2;
-            pre = (cur + 1) % 2;
-            for (int j = 0; j <= target; ++j) {
-                // f[i][j] = f[i - 1][j] + f[i -  1][j - nums[i]]
-                if (j < nums[i]) {
-                    dp[cur][j] = dp[pre][j];
-                }
-                else {
-                    dp[cur][j] = dp[pre][j] + dp[pre][j - nums[i]];
-                }
+            for (int j = target; j >= nums[i]; --j) {
+                dp[j] += dp[j - nums[i]];
             }
+            // 原来错误的写法：正序，先更新前面的话，后面 dp[j - nums[i]] 用到前面的值（前面的值，已经被更新了），所以需要倒着来；
+            // for (int j = 0; j <= target; ++j) {                                                                                     
+            //     if (j >= nums[i]) {
+            //         dp[j] += dp[j - nums[i]];
+            //     }
+            // }
         }
 
-        return dp[cur][target];
+        return dp[target];
     }
 };
 
+// // 【思路 5】：状态压缩 & 滚动数组
+// class Solution {
+// public:
+//     int findTargetSumWays(vector<int>& nums, int target) {
+//         int sum_target = std::accumulate(nums.begin(), nums.end(), 0) - std::abs(target);
+//         if (sum_target < 0 || sum_target % 2) return 0;
+
+//         target = sum_target / 2;
+//         vector dp(2, vector<int>(target + 1, 0));
+//         dp[1][0] = 1;
+
+//         int size = nums.size();
+//         int cur, pre;
+//         for (int i = 0; i < size; ++i) {
+//             cur = i % 2;                         // 原来错误的写法：cur = i % 2 + 1, 因为原来让 dp[0][0] = 1，但这样 cur 下一次就会为 2； => 简单点，就让 dp[1][0] = 1;
+//             pre = (cur + 1) % 2;
+//             for (int j = 0; j <= target; ++j) {  // 原来错误的写法：for (int j = 1; j <= target; ++j) => 0 也是需要考虑的可能
+//                 // f[i][j] = f[i - 1][j] + f[i -  1][j - nums[i]]
+//                 if (j < nums[i]) {
+//                     dp[cur][j] = dp[pre][j];
+//                 }
+//                 else {
+//                     dp[cur][j] = dp[pre][j] + dp[pre][j - nums[i]];
+//                 }
+//             }
+//         }
+
+//         return dp[cur][target];
+//     }
+// };
+
 int main() {
-    vector<int> nums = {1, 1, 1, 1, 1};
-    int target = 3;
+    vector<int> nums = {1, 2, 1};
+    int target = 0;
     std::cout << Solution().findTargetSumWays(nums, target) << std::endl;
 }
 
