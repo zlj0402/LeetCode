@@ -13,7 +13,7 @@
             "compilerPath": "D:/Tools/MSYS2/ucrt64/bin/g++.exe",
             "cStandard": "c23",
             "cppStandard": "gnu++23",
-            "intelliSenseMode": "windows-gcc-x86"
+            "intelliSenseMode": "windows-gcc-x64"
         }
     ],
     "version": 4
