@@ -1,5 +1,5 @@
 ---
-name: mbus 协议文档阅读方式
+name: mbus-docs-read
 description: 当用户要求阅读 mbus 协议文档时，结合文档理解某个协议点，或者是确认某个协议点时，请参考此规范；
 ---
 
