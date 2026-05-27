@@ -1,6 +1,6 @@
 ---
 name: annotation-for-code
-description: 当用户要求给 mbus 模块相关代码添加注释时，请参考此规范；
+description: 当用户要求代码添加注释时，或者claude自动添加函数声明时，请参考此规范；
 ---
 
 # 指令
