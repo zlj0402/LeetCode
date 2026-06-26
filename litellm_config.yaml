@@ -10,6 +10,12 @@ model_list:
     #   max_tpm: 100000      # 每分钟最大 token 数
     #   max_rpm: 60          # 每分钟最大请求数
 
+  - model_name: qwen3.7-plus
+    litellm_params:
+      model: anthropic/qwen3.7-plus
+      api_key: "sk-sp-febb8ce375bd4eb7ad44db55d3b8fb0c"
+      api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
+
   - model_name: qwen3.6-plus
     litellm_params:
       model: anthropic/qwen3.6-plus
@@ -35,8 +41,8 @@ model_list:
       api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
 
   - model_name: qwen3-coder-next
-    litellm_params:
-      model: anthropic/qwen3-coder-next
+    litellm_params: # litellm.completion() 接受的所有参数 - https://docs.litellm.ai/docs/completion/input
+      model: anthropic/qwen3-coder-next # 传递给 litellm.completion() 的模型名称
       api_key: "sk-sp-febb8ce375bd4eb7ad44db55d3b8fb0c"
       api_base: "https://coding.dashscope.aliyuncs.com/apps/anthropic"
 
@@ -48,10 +54,21 @@ general_settings:
   # database_url: "sqlite:///./litellm_users.db"
 
 # 日志级别
-litellm_settings:
+litellm_settings: # 模块级别的 litellm 设置 - https://github.com/BerriAI/litellm/blob/main/litellm/__init__.py
   drop_params: true  # 自动丢弃不支持的参数
+  fallbacks: [
+    {"glm-5": ["qwen3.6-plus"]},
+    {"kimi-k2.5": ["qwen3.6-plus"]}
+  ]
   # 全局 proxy 预算上限（可选）
   # litellm_proxy_budget: 100.0
+
+router_settings:
+  num_retries: 0
+  routing_strategy: simple-shuffle # Literal["simple-shuffle", "least-busy", "usage-based-routing", "latency-based-routing"], default="simple-shuffle"
+  optional_pre_call_checks:
+    - session_affinity
+  deployment_affinity_ttl_seconds: 600
 
 # 路由设置
 # router_settings:
