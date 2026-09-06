@@ -9,8 +9,9 @@
  * @Label: Dynamic Programming
  * 
  * @thoughts:   
- *  + 【思路 1】：动态规划，自顶向下
- *  + 【思路 2】：动态规划，自顶向上
+ *  + 【思路 1】：递归搜索 + 保存计算结果 == 记忆化搜索，自顶向下
+ *  + 【思路 2】：递归搜索 + 保存计算结果 == 记忆化搜索，自顶向上
+ *      dfs(i) = max(dfs(i - 1), dfs(i - 2) + nums[i])
  *      代码上没有什么变化，只有边界情况的改变；
  * 
  *      + rank:
@@ -18,10 +19,27 @@
  *          + 空间效率：
  *              + 思路 1：10.44 MB, 击败 54.93%
  *              + 思路 2：10.51 MB, 击败 40.09%
+ * 
+ *  + 【思路 3】：递推
+ *      f(i) = max(f(i - 1), f(i - 2) + nums[i])
  */
 
 #include <vector>
 using std::vector;
+
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int pre2 = 0, pre1 = 0;
+        int n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            int tmp = std::max(pre2 + nums[i], pre1);
+            pre2 = pre1;
+            pre1 = tmp;
+        }
+        return pre1;
+    }
+};
 
 //【思路 1】：动态规划，自顶向下
 class Solution {
