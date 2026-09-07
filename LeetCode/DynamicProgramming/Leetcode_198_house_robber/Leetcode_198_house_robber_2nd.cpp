@@ -14,6 +14,9 @@
  *      dfs(i) = max(dfs(i - 1), dfs(i - 2) + nums[i])
  *      代码上没有什么变化，只有边界情况的改变；
  * 
+ *      + 分析：
+ *          + 时间复杂度：O(n)，已经走过的节点会直接返回，虽然没有进去，但也会遍历；
+ *          + 空间复杂度：O(1)
  *      + rank:
  *          + 时间效率：0 ms，击败 100%
  *          + 空间效率：
@@ -22,11 +25,31 @@
  * 
  *  + 【思路 3】：递推
  *      f(i) = max(f(i - 1), f(i - 2) + nums[i])
+ *      dfs -> f 数组；递归 -> 循环；递归边界 -> 数组初始值；
+ *      
+ *      这里没写：见第一次刷的 【思路 4】
+ * 
+ *  + 【思路 4】：动态规划 -- 自顶向下
+ *      f(i) = max(f(i + 1), f(i + 2) + nums[i])
+ *  + 【思路 5】：动态规划 -- 自底向上
+ *      f(i) = max(f(i - 1), f(i - 2) + nums[i])
+ * 
+ *      + 分析：
+ *          + 时间复杂度：O(n)
+ *          + 空间复杂度：O(1)
+ *      + rank：
+ *          + 思路 1：
+ *              + 时间效率：0 ms, 击败 100%
+ *              + 空间效率：9.92 MB, 击败 88.04%
+ *          + 思路 2：
+ *              + 时间效率：0 ms, 击败 100%
+ *              + 空间效率：9.86 MB, 击败 94.07%    
  */
 
 #include <vector>
 using std::vector;
 
+//【思路 5】：动态规划 -- 自底向上
 class Solution {
 public:
     int rob(vector<int>& nums) {
@@ -38,6 +61,21 @@ public:
             pre1 = tmp;
         }
         return pre1;
+    }
+};
+
+// 【思路 4】：动态规划 -- 自顶向下
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int prev2 = 0, prev1 = 0;
+        int n = nums.size();
+        for (int i = n - 1; i >= 0; --i) {
+            int tmp = prev1;
+            prev1 = std::max(prev1, prev2 + nums[i]);
+            prev2 = tmp;
+        }
+        return prev1;
     }
 };
 
