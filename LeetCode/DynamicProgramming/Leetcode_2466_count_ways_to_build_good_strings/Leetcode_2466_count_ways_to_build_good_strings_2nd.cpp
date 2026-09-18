@@ -4,6 +4,9 @@
  * @author: liangj.zhang
  * @date: 2026/09/14
  * 
+ * @updated:
+ *      + 2026/09/18: add 【思路 2】：记忆化搜索
+ * 
  * @Difficulty: Medium
  * 
  * @Label: DP
@@ -35,6 +38,18 @@
  *      + rank：    
  *          + 时间效率：2 ms, 击败 99.32%
  *          + 空间效率：8.19 MB, 击败 99.04%
+ * 
+ *  + 【思路 2】：记忆化搜索
+ *      在递归当中记录；
+ *      最开始想这个递归怎么写？这有边界的递归...
+ *      想麻烦了，就拿范围内的每个值去递归；每次递归记录的值越来越多；会过略掉很多；
+ *          某个点有记录就不会深入的递归下去，时间复杂度还是没变，依旧 O(n);
+ *      + 分析：
+ *          + 时间复杂度：O(high)
+ *          + 空间复杂度：算是 O(high)
+ *      + rank:
+ *          + 时间效率：7 ms, 击败 56.75%
+ *          + 空间效率：11.19 MB, 击败 92.09%
  */
 
 #include <vector>
@@ -44,54 +59,99 @@ using std::vector;
 #define MOD 10'0000'0007
 #define MAXCNT 100001
 
-// 【思路 1 -- 写法 2】：动态规划，减少循环中的取模操作
+// 【思路 2】：记忆化搜索
 class Solution {
 private:
-    static unsigned int rec[MAXCNT];
+    static vector<int> rec;
 public:
     int countGoodStrings(int low, int high, int zero, int one) {
-        std::memset(rec, 0, sizeof(unsigned int) * (high + 1));
+        std::memset(rec.data(), -1, sizeof(int) * (high + 1));
         rec[0] = 1;
+        auto dfs = [&](this auto&& dfs, int left) {
+            if (left < 0) return 0;
+            
+            unsigned long long ret = 0;
+            if (int idx = left - zero; idx >= 0 && rec[idx] != -1) 
+                ret += rec[idx];
+            else 
+                ret += dfs(idx);
 
-        for (int i = std::min(zero, one); i <= high; ++i) {
-            // f(n) = rec[n - zero] + rec[n - one]
-            unsigned long long tmp = (i - zero >= 0 ? rec[i - zero] : 0) + (i - one >= 0 ? rec[i - one] : 0);
-            rec[i] = tmp % MOD;
-        }
+            if (int idx = left - one; idx >= 0 && rec[idx] != -1) 
+                ret += rec[idx];
+            else 
+                ret += dfs(idx);
+
+            return rec[left] = ret % MOD;
+        };
 
         unsigned long long ret = 0;
         for (int i = low; i <= high; ++i) {
-            ret += rec[i];
+            ret += dfs(i);
         }
-
         return ret % MOD;
     }
 };
 
-unsigned int Solution::rec[MAXCNT];
+vector<int> Solution::rec(MAXCNT, 0);
 
-// 【思路1 -- 写法1】：动态规划
-class Solution {
-private:
-    static unsigned int rec[MAXCNT];
-public:
-    int countGoodStrings(int low, int high, int zero, int one) {
-        std::memset(rec, 0, sizeof(unsigned int) * (high + 1));
-        rec[0] = 1;
+// // 【思路 1 -- 写法 2】：动态规划，减少循环中的取模操作
+// class Solution {
+// private:
+//     static unsigned int rec[MAXCNT];
+// public:
+//     int countGoodStrings(int low, int high, int zero, int one) {
+//         std::memset(rec, 0, sizeof(unsigned int) * (high + 1));
+//         rec[0] = 1;
 
-        for (int i = std::min(zero, one); i <= high; ++i) {
-            // f(n) = rec[n - zero] + rec[n - one]
-            if (i - zero >= 0) rec[i] = (rec[i] + rec[i - zero]) % MOD;
-            if (i - one >= 0) rec[i] = (rec[i] + rec[i - one]) % MOD; 
-        }
+//         for (int i = std::min(zero, one); i <= high; ++i) {
+//             // f(n) = rec[n - zero] + rec[n - one]
+//             unsigned long long tmp = (i - zero >= 0 ? rec[i - zero] : 0) + (i - one >= 0 ? rec[i - one] : 0);
+//             rec[i] = tmp % MOD;
+//         }
 
-        unsigned int ret = 0;
-        for (int i = low; i <= high; ++i) {
-            ret = (ret + rec[i]) % MOD;
-        }
+//         unsigned long long ret = 0;
+//         for (int i = low; i <= high; ++i) {
+//             ret += rec[i];
+//         }
 
-        return ret;
-    }
-};
+//         return ret % MOD;
+//     }
+// };
 
-unsigned int Solution::rec[MAXCNT];
+// unsigned int Solution::rec[MAXCNT];
+
+// // 【思路1 -- 写法1】：动态规划
+// class Solution {
+// private:
+//     static unsigned int rec[MAXCNT];
+// public:
+//     int countGoodStrings(int low, int high, int zero, int one) {
+//         std::memset(rec, 0, sizeof(unsigned int) * (high + 1));
+//         rec[0] = 1;
+
+//         for (int i = std::min(zero, one); i <= high; ++i) {
+//             // f(n) = rec[n - zero] + rec[n - one]
+//             if (i - zero >= 0) rec[i] = (rec[i] + rec[i - zero]) % MOD;
+//             if (i - one >= 0) rec[i] = (rec[i] + rec[i - one]) % MOD; 
+//         }
+
+//         unsigned int ret = 0;
+//         for (int i = low; i <= high; ++i) {
+//             ret = (ret + rec[i]) % MOD;
+//         }
+
+//         return ret;
+//     }
+// };
+
+// unsigned int Solution::rec[MAXCNT];
+
+int main() {
+    int low = 2;
+    int high = 3;
+    int zero = 1;
+    int one = 2;
+
+    unsigned int ret = Solution().countGoodStrings(low, high, zero, one);
+    return ret;
+}
