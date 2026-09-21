@@ -6,6 +6,7 @@
  * 
  * @updated:
  *  + 2026/09/20: add 【思路 2 -- 写法 1】：记忆化搜索 -- 先上再左，【思路 2 -- 写法 2】：记忆化搜索 -- 先左再上
+ *  + 2026/09/21: add 【思路 3】：滚动数组
  * 
  * @Difficulty: Medium
  * 
@@ -49,11 +50,48 @@
  *      + rank:
  *          + 时间效率：3 ms, 击败 29.31%
  *          + 空间效率：16.07 MB, 击败 33.84%
+ * 
+ *  + 【思路 3】：滚动数组
+ *      只利用持久的一行，（当然也可以额外用一个数组）
+ *          如果是申请全部空间，当遍历到某一行，除了前一行有用，再前面的行已经失去了作用。
+ *      这就是滚动数组的思想；
+ *      + 分析：
+ *          + 时间复杂度：O(mn)
+ *          + 空间复杂度：O(1)
+ *      + rank:
+ *          + 时间效率：0 ms, 击败 100%
+ *          + 空间效率：14.94 MB, 击败 96.40%
  */
 
 #include <vector>
 #include <iostream>
 using std::vector;
+
+// 【思路 3】：滚动数组
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+
+        // i = 0
+        for (int j = 1; j < n; ++j) {
+            grid[0][j] += grid[0][j - 1];
+        }
+        for (int i = 1; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (j > 0) {
+                    grid[0][j] = std::min(grid[0][j], grid[0][j - 1]) + grid[i][j];
+                }
+                else {
+                    grid[0][j] += grid[i][j];
+                }
+            }
+        }
+
+        return grid[0][n-1];
+    }
+};
 
 // 【思路 2 -- 写法 1】：记忆化搜索 -- 先上再左，
 class Solution {
