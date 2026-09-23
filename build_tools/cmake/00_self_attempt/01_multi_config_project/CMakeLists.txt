@@ -9,13 +9,14 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo;MinSizeRel" CACHE ST
 
 enable_testing()
 
-message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
-message("CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
-message("CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
+message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
+message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 
-message("=== ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
+message(STATUS "=== ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
+get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 # 检测是否为多配置生成器
-if(CMAKE_CONFIGURATION_TYPES)
+if(isMultiConfig)
     message(STATUS "")
     message(STATUS "╔══════════════════════════════════════════╗")
     message(STATUS "║  Multi-config Generator Detected         ║")
@@ -27,6 +28,9 @@ if(CMAKE_CONFIGURATION_TYPES)
     message(STATUS "╚══════════════════════════════════════════╝")
     message(STATUS "")
 else()
+    # set default build type; if set before, there is no influence(cache variable characteristic)
+    # avoid 'empty' build type
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type")
     message(STATUS "")
     message(STATUS "╔══════════════════════════════════════════╗")
     message(STATUS "║  Single-config Generator Detected        ║")
