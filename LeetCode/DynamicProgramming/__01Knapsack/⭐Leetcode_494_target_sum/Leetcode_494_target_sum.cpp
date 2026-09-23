@@ -240,6 +240,7 @@ int main() {
 // };
 
 // // 【思路 2】：回溯，转换问题后剪枝
+// // 再次看这个代码，这算不上剪枝，如果是有序的数组，那么不满足条件时，可以提前退出，达到剪枝效果
 // class Solution {
 // public:
 //     int findTargetSumWays(vector<int>& nums, int target) {
